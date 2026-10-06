@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Linux DevOps Tracker</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f1117;
+            color: #ffffff;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #8b93a7;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #181c25;
+            border: 1px solid #272d3a;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #292f3c;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: #4ade80;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .label {
+            color: #8b93a7;
+            font-size: 14px;
+        }
+
+        button {
+            margin-top: 16px;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 10px;
+            background: #4ade80;
+            color: #08110c;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Linux → DevOps Tracker</h1>
+
+    <p class="subtitle">
+        My personal Linux learning dashboard
+    </p>
+
+    <div class="card">
+        <p class="label">Overall Progress</p>
+
+        <h2 id="progressText">0%</h2>
+
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <p class="label">Current Session</p>
+
+        <h2>S01 — Linux Fundamentals</h2>
+
+        <button onclick="completeSession()">
+            Complete Session
+        </button>
+    </div>
+
+    <div class="stats">
+
+        <div class="card">
+            <p class="label">Sessions</p>
+            <div class="stat-number" id="sessions">
+                0 / 240
+            </div>
+        </div>
+
+        <div class="card">
+            <p class="label">Labs</p>
+            <div class="stat-number">
+                0
+            </div>
+        </div>
+
+        <div class="card">
+            <p class="label">Reviews</p>
+            <div class="stat-number">
+                0
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+let completedSessions = 0;
+
+function completeSession() {
+
+    if (completedSessions < 240) {
+        completedSessions++;
+    }
+
+    document.getElementById("sessions").innerText =
+        completedSessions + " / 240";
+
+    let progress =
+        (completedSessions / 240) * 100;
+
+    document.getElementById("progressText").innerText =
+        progress.toFixed(1) + "%";
+
+    document.getElementById("progressBar").style.width =
+        progress + "%";
+}
+
+</script>
+
+</body>
+</html>
