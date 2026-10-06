@@ -1,192 +1,1192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Linux → DevOps Tracker</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<title>Linux → DevOps Tracker</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #0d1117;
+    color: #e6edf3;
+    padding: 16px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+header {
+    margin-bottom: 25px;
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #8b949e;
+}
+
+.card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 18px;
+}
+
+.progress-container {
+    height: 14px;
+    background: #21262d;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 12px 0;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #238636;
+    transition: width .3s;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.stat {
+    background: #21262d;
+    padding: 16px;
+    border-radius: 10px;
+}
+
+.stat-number {
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    color: #8b949e;
+    font-size: 13px;
+}
+
+.phase {
+    margin-bottom: 14px;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.phase-header {
+    padding: 16px;
+    background: #1c2128;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.phase-title {
+    font-weight: bold;
+}
+
+.phase-progress {
+    color: #8b949e;
+    font-size: 13px;
+}
+
+.sessions {
+    padding: 8px;
+}
+
+.session {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+}
+
+.session:hover {
+    background: #21262d;
+}
+
+.session-checkbox {
+    width: 20px;
+    height: 20px;
+    accent-color: #238636;
+}
+
+.session-number {
+    color: #8b949e;
+    min-width: 45px;
+    font-size: 13px;
+}
+
+.session-title {
+    flex: 1;
+}
+
+.completed {
+    text-decoration: line-through;
+    color: #6e7681;
+}
+
+.badge {
+    font-size: 11px;
+    padding: 4px 7px;
+    border-radius: 8px;
+    background: #21262d;
+    color: #8b949e;
+}
+
+.linux-badge {
+    color: #58a6ff;
+}
+
+.devops-badge {
+    color: #d2a8ff;
+}
+
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    background: #238636;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: .9;
+}
+
+.reset-button {
+    background: #da3633;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.current-session {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.current-info h2 {
+    margin-bottom: 7px;
+}
+
+.current-info p {
+    color: #8b949e;
+}
+
+@media (max-width: 650px) {
 
     body {
-      font-family: Arial, sans-serif;
-      background: #0d1117;
-      color: #e6edf3;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
+        padding: 10px;
     }
 
     h1 {
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      color: #8b949e;
-      margin-bottom: 25px;
-    }
-
-    .card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 18px;
-    }
-
-    .card h2 {
-      margin-bottom: 15px;
-    }
-
-    .progress-container {
-      background: #21262d;
-      height: 14px;
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 15px 0;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: #238636;
-      transition: width 0.3s;
-    }
-
-    .progress-text {
-      color: #8b949e;
-    }
-
-    .session {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .session-info h3 {
-      margin-bottom: 7px;
-    }
-
-    .session-info p {
-      color: #8b949e;
-    }
-
-    button {
-      background: #238636;
-      color: white;
-      border: none;
-      padding: 11px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    button.completed {
-      background: #30363d;
-      color: #8b949e;
+        font-size: 23px;
     }
 
     .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+        grid-template-columns: 1fr;
     }
 
-    .stat {
-      background: #21262d;
-      border-radius: 10px;
-      padding: 18px;
-      text-align: center;
-    }
-
-    .stat-number {
-      font-size: 28px;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .stat-label {
-      color: #8b949e;
-      font-size: 13px;
-    }
-
-    .status {
-      color: #3fb950;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-
-    @media (max-width: 600px) {
-      body {
-        padding: 12px;
-      }
-
-      .session {
+    .current-session {
         flex-direction: column;
         align-items: stretch;
-      }
-
-      button {
-        width: 100%;
-      }
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
     }
-  </style>
+
+    .session {
+        align-items: flex-start;
+    }
+
+    .session-title {
+        font-size: 14px;
+    }
+
+    .badge {
+        display: none;
+    }
+}
+
+</style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <h1>Linux → DevOps Tracker</h1>
-    <p class="subtitle">
-      Personal Linux → DevOps / SRE Learning System
-    </p>
+<header>
 
-    <!-- Overall Progress -->
-    <div class="card">
-      <h2>Overall Progress</h2>
+<h1>🐧 Linux → DevOps → SRE</h1>
 
-      <div class="progress-container">
-        <div id="progressBar" class="progress-bar"></div>
-      </div>
+<p class="subtitle">
+Personal Learning & Progress Tracker
+</p>
 
-      <p class="progress-text" id="progressText">
-        0 / 240 Sessions
-      </p>
-    </div>
+</header>
 
-    <!-- Current Session -->
-    <div class="card">
 
-      <h2>Current Session</h2>
+<!-- CURRENT SESSION -->
 
-      <div class="session">
+<div class="card">
 
-        <div class="session-info">
-          <h3 id="sessionTitle">
-            S01 — Linux Fundamentals
-          </h3>
+<div class="current-session">
 
-          <p>
-            Foundation of Linux, kernel, distribution,
-            boot process and system architecture.
-          </p>
+<div class="current-info">
 
-          <div id="status" class="status"></div>
-        </
+<h2 id="currentTitle">
+S01 — Lab Architecture
+</h2>
+
+<p id="currentDescription">
+Your current learning session
+</p>
+
+</div>
+
+<button onclick="completeCurrent()">
+Complete Current
+</button>
+
+</div>
+
+</div>
+
+
+<!-- PROGRESS -->
+
+<div class="card">
+
+<h2>Overall Progress</h2>
+
+<div class="progress-container">
+
+<div
+id="progressBar"
+class="progress-bar">
+</div>
+
+</div>
+
+<p id="progressText">
+0 / 240 Sessions — 0%
+</p>
+
+</div>
+
+
+<!-- STATS -->
+
+<div class="card">
+
+<div class="stats">
+
+<div class="stat">
+
+<div
+id="completedCount"
+class="stat-number">
+0
+</div>
+
+<div class="stat-label">
+Sessions Completed
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div
+id="remainingCount"
+class="stat-number">
+240
+</div>
+
+<div class="stat-label">
+Sessions Remaining
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div
+id="phaseCount"
+class="stat-number">
+0
+</div>
+
+<div class="stat-label">
+Phases Completed
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ROADMAP -->
+
+<div class="card">
+
+<h2>Roadmap</h2>
+
+<br>
+
+<div id="roadmap"></div>
+
+</div>
+
+
+<!-- ACTIONS -->
+
+<div class="card">
+
+<div class="actions">
+
+<button
+class="reset-button"
+onclick="resetProgress()">
+
+Reset Progress
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/*
+========================================
+ROADMAP DATA
+========================================
+*/
+
+const phases = [
+
+{
+name: "Phase 0 — Lab & Admin Habits",
+range: "S01–S03",
+type: "Linux",
+sessions: [
+
+["S01","Lab Architecture"],
+["S02","Server Install"],
+["S03","Admin Habits"]
+
+]
+},
+
+{
+name: "Phase 1 — Foundations",
+range: "S04–S22",
+type: "Linux",
+sessions: [
+
+["S04","Shell Internals"],
+["S05","Streams"],
+["S06","Text Tools — grep/sed/awk/cut/sort/uniq/tr"],
+["S07","Regex و Log Slicing"],
+["S08","find و xargs"],
+["S09","Environment — vim/tmux/PATH/.bashrc/.profile/dotfiles"],
+
+["S10","FHS و inode"],
+["S11","Special Filesystems — /proc /sys /dev /run"],
+["S12","Archive و Copy — tar/zstd/rsync/dd"],
+
+["S13","Users / Groups"],
+["S14","Permission Model"],
+["S15","ACL و sudo"],
+["S16","Permission Troubleshooting"],
+
+["S17","apt/dpkg و dnf/rpm"],
+["S18","Repos و Verification"],
+
+["S19","Process Model"],
+["S20","Process Internals"],
+["S21","Cumulative + Project"],
+["S22","Phase 1 Assessment"]
+
+]
+},
+
+{
+name: "Phase 2 — Core System Administration",
+range: "S23–S46",
+type: "Linux",
+sessions: [
+
+["S23","Boot Chain"],
+["S24","GRUB2 و Recovery"],
+["S25","systemd Units"],
+["S26","Custom Units"],
+["S27","Timers و journald"],
+["S28","Boot / Service Troubleshooting"],
+
+["S29","Block Devices"],
+["S30","Filesystems"],
+["S31","Filesystem Internals"],
+["S32","LVM I"],
+["S33","LVM II"],
+["S34","RAID"],
+["S35","Swap / zram / Quota"],
+["S36","LUKS"],
+["S37","Storage Troubleshooting"],
+["S38","Storage Project"],
+
+["S39","PAM"],
+["S40","SSH Fundamentals"],
+["S41","Central Authentication — LDAP / SSSD / FreeIPA"],
+
+["S42","cron و at"],
+["S43","Logging — rsyslog / journald / logrotate"],
+["S44","Backup"],
+["S45","Phase 2 Project"],
+["S46","Phase 2 Assessment"]
+
+]
+},
+
+{
+name: "Phase 3 — Networking",
+range: "S47–S60",
+type: "Linux",
+sessions: [
+
+["S47","TCP/IP برای Admin"],
+["S48","ip / ss / nmcli / netplan"],
+["S49","Routing"],
+["S50","ARP / VLAN / Bridge"],
+["S51","Bonding / Teaming"],
+["S52","DNS Client"],
+["S53","TCP Deep Dive"],
+["S54","tcpdump / Wireshark"],
+["S55","Netfilter / nftables"],
+["S56","NAT"],
+["S57","Namespaces و veth"],
+["S58","Network Troubleshooting"],
+["S59","Project — Gateway"],
+["S60","Phase 3 Assessment"]
+
+]
+},
+
+{
+name: "Phase 4 — Bash، Git و Python",
+range: "S61–S75",
+type: "Linux",
+sessions: [
+
+["S61","Script Basics"],
+["S62","Loops / Functions / Arrays"],
+["S63","Robust Scripting — set -euo pipefail / trap / shellcheck"],
+["S64","Args / Logging / Locks"],
+["S65","awk / sed پیشرفته"],
+["S66","Real Scripts I — Health Check / User Provisioning"],
+["S67","Real Scripts II — Backup / Rotation / Notification"],
+["S68","Testing — bats / Style"],
+["S69","Git Fundamentals"],
+["S70","Branch / Merge / Rebase"],
+["S71","Workflows — PR / Hooks / etckeeper"],
+["S72","Python for Sysadmin I"],
+["S73","Python II — JSON / YAML / API"],
+["S74","Project"],
+["S75","Phase 4 Assessment"]
+
+]
+},
+
+{
+name: "Phase 5 — Network Services",
+range: "S76–S93",
+type: "Linux",
+sessions: [
+
+["S76","SSH Bastion"],
+["S77","DNS I — مفاهیم + Unbound"],
+["S78","DNS II — BIND Authoritative"],
+["S79","DNS III — Split-Horizon + Troubleshooting"],
+["S80","DHCP — Kea / ISC + PXE"],
+["S81","Time — chrony"],
+["S82","Nginx"],
+["S83","Apache"],
+["S84","PKI و TLS"],
+["S85","ACME / Let's Encrypt / HTTPS Hardening"],
+["S86","Reverse Proxy و Load Balancing"],
+["S87","NFS"],
+["S88","Samba"],
+["S89","SFTP Chroot"],
+["S90","Database Administration — PostgreSQL / MariaDB"],
+["S91","Postfix — Optional"],
+["S92","Project"],
+["S93","Phase 5 Assessment"]
+
+]
+},
+
+{
+name: "Phase 6 — Security و Hardening",
+range: "S94–S108",
+type: "Linux",
+sessions: [
+
+["S94","Threat Model"],
+["S95","Account / SSH / sudo Hardening"],
+["S96","Firewall Policy"],
+["S97","SELinux I"],
+["S98","SELinux II"],
+["S99","SELinux III + AppArmor"],
+["S100","auditd"],
+["S101","fail2ban / CrowdSec"],
+["S102","Kernel Hardening — sysctl / AIDE"],
+["S103","CIS / OpenSCAP / Lynis"],
+["S104","Patch و Vulnerability Management"],
+["S105","Secrets و GPG"],
+["S106","Incident Response"],
+["S107","Project"],
+["S108","Phase 6 Assessment"]
+
+]
+},
+
+{
+name: "Phase 7 — Performance، Troubleshooting و Internals",
+range: "S109–S129",
+type: "Linux",
+sessions: [
+
+["S109","USE Method"],
+["S110","CPU و Scheduler — Load Average"],
+["S111","Memory Management — Virtual Memory / Page Cache / OOM"],
+["S112","Memory Leak Lab"],
+["S113","Disk I/O — iostat / Schedulers"],
+["S114","FD و Limits"],
+["S115","Network Tuning — sysctl"],
+["S116","strace / ltrace / perf"],
+["S117","eBPF / bpftrace"],
+["S118","Syscalls و Kernel Modules"],
+["S119","cgroups v2"],
+["S120","Namespaces"],
+["S121","Monitoring پایه — node_exporter / Prometheus / Grafana"],
+["S122","Central Logging پایه — rsyslog remote"],
+["S123","Virtualization — KVM / libvirt"],
+["S124","Kernel Operations — Update / kdump / Live Patch"],
+["S125","Troubleshooting Bootcamp I"],
+["S126","Troubleshooting Bootcamp II"],
+["S127","Troubleshooting Bootcamp III"],
+["S128","Troubleshooting Bootcamp IV"],
+["S129","Phase 7 Assessment"]
+
+]
+},
+
+{
+name: "Phase 8 — Linux Capstone و Gate",
+range: "S130–S136",
+type: "Linux",
+sessions: [
+
+["S130","Architecture Design"],
+["S131","Capstone Build — Networking"],
+["S132","Capstone Build — Storage"],
+["S133","Capstone Build — Services"],
+["S134","Capstone Build — Security / Monitoring / Backup / Automation"],
+["S135","Chaos Day"],
+["S136","Linux Professional Assessment + Gate Review"]
+
+]
+},
+
+{
+name: "Phase 9 — Docker",
+range: "S137–S148",
+type: "DevOps / SRE",
+sessions: [
+
+["S137","Container vs VM و Internals"],
+["S138","Docker CLI"],
+["S139","Dockerfile و Multi-stage"],
+["S140","Docker Networking"],
+["S141","Volumes و Storage"],
+["S142","Compose"],
+["S143","Registry و Tagging"],
+["S144","Image Security — Trivy / Rootless"],
+["S145","Podman / Buildah"],
+["S146","Container Troubleshooting"],
+["S147","Project"],
+["S148","Phase 9 Assessment"]
+
+]
+},
+
+{
+name: "Phase 10 — Ansible",
+range: "S149–S159",
+type: "DevOps / SRE",
+sessions: [
+
+["S149","مفاهیم / Inventory / Idempotency"],
+["S150","Ad-hoc و Playbook"],
+["S151","Variables / Facts / Jinja2"],
+["S152","Handlers / Loops / Conditionals / Tags"],
+["S153","Roles و Collections"],
+["S154","Vault"],
+["S155","Hardening و User Management"],
+["S156","Testing — ansible-lint / Molecule"],
+["S157","AWX / Semaphore — Optional"],
+["S158","Project"],
+["S159","Phase 10 Assessment"]
+
+]
+},
+
+{
+name: "Phase 11 — CI/CD",
+range: "S160–S169",
+type: "DevOps / SRE",
+sessions: [
+
+["S160","مفاهیم CI/CD"],
+["S161","GitHub Actions / GitLab CI"],
+["S162","Build / Test / Push Image"],
+["S163","Runners — Self-hosted"],
+["S164","Deployment Strategies"],
+["S165","Jenkins — Overview"],
+["S166","Artifact و Versioning"],
+["S167","Pipeline + Ansible Deploy"],
+["S168","Project"],
+["S169","Phase 11 Assessment"]
+
+]
+},
+
+{
+name: "Phase 12 — Cloud و Infrastructure as Code",
+range: "S170–S184",
+type: "DevOps / SRE",
+sessions: [
+
+["S170","Cloud Fundamentals"],
+["S171","Compute و Storage — EC2 / EBS"],
+["S172","VPC"],
+["S173","IAM"],
+["S174","S3 / RDS / ELB / ASG"],
+["S175","Cost و Well-Architected"],
+["S176","Terraform Basics"],
+["S177","State / Variables / Outputs"],
+["S178","Modules"],
+["S179","Remote State / Workspaces"],
+["S180","VPC + EC2 + ALB"],
+["S181","Packer — Optional"],
+["S182","IaC Testing / Policy"],
+["S183","Project"],
+["S184","Phase 12 Assessment"]
+
+]
+},
+
+{
+name: "Phase 13 — Kubernetes",
+range: "S185–S202",
+type: "DevOps / SRE",
+sessions: [
+
+["S185","Kubernetes Architecture"],
+["S186","Local Cluster — kind / minikube"],
+["S187","Pods / ReplicaSets / Deployments"],
+["S188","Services و DNS"],
+["S189","Ingress / Gateway API"],
+["S190","ConfigMaps و Secrets"],
+["S191","PV / PVC / StorageClass"],
+["S192","Scheduling / Resources / Probes"],
+["S193","StatefulSet / DaemonSet / Jobs"],
+["S194","RBAC"],
+["S195","NetworkPolicy و CNI"],
+["S196","Helm"],
+["S197","Kustomize و GitOps — Argo CD"],
+["S198","Cluster با kubeadm"],
+["S199","Upgrade و Backup etcd"],
+["S200","Kubernetes Troubleshooting"],
+["S201","Project"],
+["S202","Phase 13 Assessment — سبک CKA"]
+
+]
+},
+
+{
+name: "Phase 14 — Observability",
+range: "S203–S212",
+type: "DevOps / SRE",
+sessions: [
+
+["S203","سه ستون Observability و Golden Signals"],
+["S204","Prometheus و PromQL"],
+["S205","Alertmanager و Alert Design"],
+["S206","Grafana"],
+["S207","Logging — Loki / ELK"],
+["S208","Tracing — OpenTelemetry / Jaeger"],
+["S209","Kubernetes Observability"],
+["S210","Blackbox / Synthetic Monitoring"],
+["S211","Project"],
+["S212","Phase 14 Assessment"]
+
+]
+},
+
+{
+name: "Phase 15 — DevSecOps",
+range: "S213–S221",
+type: "DevOps / SRE",
+sessions: [
+
+["S213","Shift-left و Threat Modeling"],
+["S214","SAST / Dependency Scanning / SBOM"],
+["S215","Container و IaC Scanning"],
+["S216","Secrets Management — Vault / SOPS"],
+["S217","Supply Chain — cosign / SLSA"],
+["S218","Kubernetes Security — PSA / Kyverno / OPA / Falco"],
+["S219","Compliance as Code"],
+["S220","Project"],
+["S221","Phase 15 Assessment"]
+
+]
+},
+
+{
+name: "Phase 16 — SRE و Advanced Infrastructure",
+range: "S222–S231",
+type: "DevOps / SRE",
+sessions: [
+
+["S222","SLI / SLO / Error Budget"],
+["S223","Incident Management / On-call / Postmortem"],
+["S224","HA — Keepalived / Pacemaker / Corosync / Patroni"],
+["S225","DR / RTO / RPO"],
+["S226","Capacity Planning و Load Testing"],
+["S227","Chaos Engineering"],
+["S228","Multi-region و DNS Failover"],
+["S229","Platform Engineering و Cost"],
+["S230","Project"],
+["S231","Phase 16 Assessment"]
+
+]
+},
+
+{
+name: "Phase 17 — Final Enterprise Capstone",
+range: "S232–S240",
+type: "DevOps / SRE",
+sessions: [
+
+["S232","Architecture و Design Review"],
+["S233","ساخت مرحله‌ای I"],
+["S234","ساخت مرحله‌ای II"],
+["S235","ساخت مرحله‌ای III"],
+["S236","ساخت مرحله‌ای IV"],
+["S237","ساخت مرحله‌ای V"],
+["S238","Chaos / Incident Day"],
+["S239","Documentation و Demo"],
+["S240","Final Assessment + آمادگی مصاحبه / رزومه"]
+
+]
+}
+
+];
+
+
+/*
+========================================
+STORAGE
+========================================
+*/
+
+let completed =
+JSON.parse(
+localStorage.getItem("completedSessions") || "[]"
+);
+
+
+/*
+========================================
+HELPERS
+========================================
+*/
+
+function isCompleted(id) {
+    return completed.includes(id);
+}
+
+
+function save() {
+
+    localStorage.setItem(
+        "completedSessions",
+        JSON.stringify(completed)
+    );
+
+}
+
+
+/*
+========================================
+COMPLETE / UNCOMPLETE
+========================================
+*/
+
+function toggleSession(id) {
+
+    if (isCompleted(id)) {
+
+        completed =
+        completed.filter(
+            session => session !== id
+        );
+
+    } else {
+
+        completed.push(id);
+
+    }
+
+    save();
+
+    render();
+
+}
+
+
+/*
+========================================
+CURRENT SESSION
+========================================
+*/
+
+function getCurrentSession() {
+
+    for (const phase of phases) {
+
+        for (const session of phase.sessions) {
+
+            if (!isCompleted(session[0])) {
+
+                return session;
+
+            }
+
+        }
+
+    }
+
+    return null;
+
+}
+
+
+function completeCurrent() {
+
+    const current =
+    getCurrentSession();
+
+    if (!current) {
+
+        alert("All 240 sessions are completed! 🎉");
+
+        return;
+
+    }
+
+    toggleSession(current[0]);
+
+}
+
+
+/*
+========================================
+RENDER ROADMAP
+========================================
+*/
+
+function render() {
+
+    const roadmap =
+    document.getElementById("roadmap");
+
+    roadmap.innerHTML = "";
+
+    let totalCompleted = completed.length;
+
+    let completedPhases = 0;
+
+
+    phases.forEach((phase, index) => {
+
+        const phaseCompleted =
+        phase.sessions.filter(
+            session => isCompleted(session[0])
+        ).length;
+
+
+        if (
+            phaseCompleted ===
+            phase.sessions.length
+        ) {
+
+            completedPhases++;
+
+        }
+
+
+        const phaseElement =
+        document.createElement("div");
+
+        phaseElement.className = "phase";
+
+
+        const header =
+        document.createElement("div");
+
+        header.className = "phase-header";
+
+        header.innerHTML = `
+
+            <div>
+
+                <div class="phase-title">
+                    ${phase.name}
+                </div>
+
+                <div class="phase-progress">
+                    ${phase.range}
+                </div>
+
+            </div>
+
+            <div class="phase-progress">
+                ${phaseCompleted}/${phase.sessions.length}
+            </div>
+
+        `;
+
+
+        const sessionsContainer =
+        document.createElement("div");
+
+        sessionsContainer.className =
+        "sessions";
+
+
+        phase.sessions.forEach(session => {
+
+            const id = session[0];
+            const title = session[1];
+
+            const checked =
+            isCompleted(id);
+
+            const row =
+            document.createElement("div");
+
+            row.className = "session";
+
+
+            row.innerHTML = `
+
+                <input
+                    class="session-checkbox"
+                    type="checkbox"
+                    ${checked ? "checked" : ""}
+                    onchange="toggleSession('${id}')"
+                >
+
+                <div class="session-number">
+                    ${id}
+                </div>
+
+                <div class="
+                    session-title
+                    ${checked ? "completed" : ""}
+                ">
+                    ${title}
+                </div>
+
+                <div class="
+                    badge
+                    ${phase.type === "Linux"
+                        ? "linux-badge"
+                        : "devops-badge"}
+                ">
+                    ${phase.type}
+                </div>
+
+            `;
+
+
+            sessionsContainer.appendChild(row);
+
+        });
+
+
+        phaseElement.appendChild(header);
+
+        phaseElement.appendChild(
+            sessionsContainer
+        );
+
+        roadmap.appendChild(
+            phaseElement
+        );
+
+    });
+
+
+    /*
+    ========================================
+    GLOBAL PROGRESS
+    ========================================
+    */
+
+    const progress =
+    (totalCompleted / 240) * 100;
+
+
+    document.getElementById(
+        "progressBar"
+    ).style.width =
+    progress + "%";
+
+
+    document.getElementById(
+        "progressText"
+    ).textContent =
+    `${totalCompleted} / 240 Sessions — ${progress.toFixed(1)}%`;
+
+
+    document.getElementById(
+        "completedCount"
+    ).textContent =
+    totalCompleted;
+
+
+    document.getElementById(
+        "remainingCount"
+    ).textContent =
+    240 - totalCompleted;
+
+
+    document.getElementById(
+        "phaseCount"
+    ).textContent =
+    completedPhases;
+
+
+    /*
+    ========================================
+    CURRENT SESSION
+    ========================================
+    */
+
+    const current =
+    getCurrentSession();
+
+
+    if (current) {
+
+        document.getElementById(
+            "currentTitle"
+        ).textContent =
+        `${current[0]} — ${current[1]}`;
+
+        document.getElementById(
+            "currentDescription"
+        ).textContent =
+        "Your next session in the roadmap.";
+
+    } else {
+
+        document.getElementById(
+            "currentTitle"
+        ).textContent =
+        "🎉 Roadmap Completed";
+
+        document.getElementById(
+            "currentDescription"
+        ).textContent =
+        "You completed all 240 sessions.";
+
+    }
+
+}
+
+
+/*
+========================================
+RESET
+========================================
+*/
+
+function resetProgress() {
+
+    const confirmed =
+    confirm(
+        "Reset ALL session progress?"
+    );
+
+    if (!confirmed) return;
+
+    completed = [];
+
+    save();
+
+    render();
+
+}
+
+
+/*
+========================================
+START
+========================================
+*/
+
+render();
+
+</script>
+
+</body>
+</html>
