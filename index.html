@@ -1,239 +1,316 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Linux → DevOps Tracker</title>
+<title>Linux → DevOps → SRE Tracker</title>
 
 <style>
-
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background: #0d1117;
-    color: #e6edf3;
-    padding: 16px;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b1120;
+  color: #e5e7eb;
+}
+
+button, textarea, select {
+  font: inherit;
 }
 
 .container {
-    max-width: 1000px;
-    margin: auto;
+  width: min(100% - 24px, 900px);
+  margin: auto;
+  padding: 20px 0 60px;
 }
 
-header {
-    margin-bottom: 25px;
+.header {
+  background: #111827;
+  border: 1px solid #263244;
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 16px;
 }
 
-h1 {
-    font-size: 28px;
-    margin-bottom: 8px;
+.header h1 {
+  margin: 0 0 8px;
+  font-size: 24px;
 }
 
-.subtitle {
-    color: #8b949e;
+.muted {
+  color: #94a3b8;
 }
 
-.card {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 14px;
-    padding: 18px;
-    margin-bottom: 18px;
-}
-
-.progress-container {
-    height: 14px;
-    background: #21262d;
-    border-radius: 20px;
-    overflow: hidden;
-    margin: 12px 0;
+.progress-box {
+  margin-top: 18px;
 }
 
 .progress-bar {
-    height: 100%;
-    width: 0%;
-    background: #238636;
-    transition: width .3s;
+  height: 12px;
+  background: #1e293b;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #22c55e;
+  transition: width .3s;
 }
 
 .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .stat {
-    background: #21262d;
-    padding: 16px;
-    border-radius: 10px;
+  background: #0f172a;
+  border: 1px solid #263244;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
 }
 
-.stat-number {
-    font-size: 25px;
-    font-weight: bold;
-    margin-bottom: 5px;
+.stat strong {
+  display: block;
+  font-size: 20px;
+  margin-bottom: 4px;
 }
 
-.stat-label {
-    color: #8b949e;
-    font-size: 13px;
+.card {
+  background: #111827;
+  border: 1px solid #263244;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.card h2, .card h3 {
+  margin-top: 0;
+}
+
+.next-session {
+  border: 1px solid #2563eb;
+  background: #0f1d38;
+}
+
+.btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 15px;
+  cursor: pointer;
+  color: white;
+  background: #2563eb;
+  margin-top: 8px;
+}
+
+.btn.secondary {
+  background: #334155;
+}
+
+.btn.success {
+  background: #16a34a;
+}
+
+.btn.danger {
+  background: #dc2626;
+}
+
+.btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
 }
 
 .phase {
-    margin-bottom: 14px;
-    border: 1px solid #30363d;
-    border-radius: 12px;
-    overflow: hidden;
+  background: #111827;
+  border: 1px solid #263244;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  overflow: hidden;
 }
 
 .phase-header {
-    padding: 16px;
-    background: #1c2128;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  padding: 15px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 }
 
 .phase-title {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .phase-progress {
-    color: #8b949e;
-    font-size: 13px;
+  color: #94a3b8;
+  font-size: 13px;
 }
 
 .sessions {
-    padding: 8px;
+  display: none;
+  padding: 0 10px 10px;
+}
+
+.phase.open .sessions {
+  display: block;
 }
 
 .session {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 5px;
+  width: 100%;
+  text-align: right;
+  background: #0f172a;
+  border: 1px solid #263244;
+  color: #e5e7eb;
+  border-radius: 12px;
+  padding: 13px;
+  margin-top: 8px;
+  cursor: pointer;
 }
 
 .session:hover {
-    background: #21262d;
+  border-color: #3b82f6;
 }
 
-.session-checkbox {
-    width: 20px;
-    height: 20px;
-    accent-color: #238636;
+.session.completed {
+  border-color: #16a34a;
 }
 
-.session-number {
-    color: #8b949e;
-    min-width: 45px;
-    font-size: 13px;
+.session-id {
+  color: #60a5fa;
+  font-weight: bold;
 }
 
-.session-title {
-    flex: 1;
+.check {
+  color: #22c55e;
+  float: left;
 }
 
-.completed {
-    text-decoration: line-through;
-    color: #6e7681;
+.hidden {
+  display: none !important;
+}
+
+.back {
+  margin-bottom: 12px;
+}
+
+.detail-title {
+  font-size: 24px;
+  margin-bottom: 5px;
 }
 
 .badge {
-    font-size: 11px;
-    padding: 4px 7px;
-    border-radius: 8px;
-    background: #21262d;
-    color: #8b949e;
+  display: inline-block;
+  background: #1e293b;
+  color: #93c5fd;
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 13px;
+  margin: 3px;
 }
 
-.linux-badge {
-    color: #58a6ff;
+.part {
+  background: #0f172a;
+  border: 1px solid #263244;
+  border-radius: 12px;
+  padding: 13px;
+  margin-top: 9px;
 }
 
-.devops-badge {
-    color: #d2a8ff;
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
 }
 
-button {
-    border: none;
-    border-radius: 8px;
-    padding: 10px 14px;
-    background: #238636;
-    color: white;
-    cursor: pointer;
+.status-btn {
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: white;
+  border-radius: 10px;
+  padding: 9px 4px;
+  cursor: pointer;
 }
 
-button:hover {
-    opacity: .9;
+.status-btn.active {
+  border-color: #60a5fa;
+  background: #1d4ed8;
 }
 
-.reset-button {
-    background: #da3633;
+textarea {
+  width: 100%;
+  min-height: 130px;
+  resize: vertical;
+  background: #0f172a;
+  color: white;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 12px;
 }
 
-.actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+.review {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0f172a;
+  border: 1px solid #263244;
+  padding: 11px;
+  border-radius: 10px;
+  margin-top: 7px;
 }
 
-.current-session {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
+.review.done {
+  border-color: #16a34a;
 }
 
-.current-info h2 {
-    margin-bottom: 7px;
+.review button {
+  background: #334155;
+  border: 0;
+  color: white;
+  padding: 7px 10px;
+  border-radius: 8px;
 }
 
-.current-info p {
-    color: #8b949e;
+.exercise {
+  background: #0f172a;
+  border-right: 4px solid #3b82f6;
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: 8px;
 }
 
-@media (max-width: 650px) {
-
-    body {
-        padding: 10px;
-    }
-
-    h1 {
-        font-size: 23px;
-    }
-
-    .stats {
-        grid-template-columns: 1fr;
-    }
-
-    .current-session {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .session {
-        align-items: flex-start;
-    }
-
-    .session-title {
-        font-size: 14px;
-    }
-
-    .badge {
-        display: none;
-    }
+.danger-box {
+  background: #2a1515;
+  border: 1px solid #7f1d1d;
+  border-radius: 12px;
+  padding: 13px;
 }
 
+.nav-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .status-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .status-btn {
+    font-size: 12px;
+  }
+}
 </style>
 </head>
 
@@ -241,950 +318,1199 @@ button:hover {
 
 <div class="container">
 
-<header>
+  <!-- DASHBOARD -->
+  <section id="dashboard">
 
-<h1>🐧 Linux → DevOps → SRE</h1>
+    <div class="header">
+      <h1>🐧 Linux → DevOps → SRE</h1>
+      <div class="muted">Professional Learning Tracker</div>
 
-<p class="subtitle">
-Personal Learning & Progress Tracker
-</p>
+      <div class="progress-box">
+        <div class="progress-bar">
+          <div id="overallFill" class="progress-fill"></div>
+        </div>
 
-</header>
+        <div class="stats">
+          <div class="stat">
+            <strong id="completedCount">0</strong>
+            <span class="muted">Completed</span>
+          </div>
 
+          <div class="stat">
+            <strong id="remainingCount">240</strong>
+            <span class="muted">Remaining</span>
+          </div>
 
-<!-- CURRENT SESSION -->
+          <div class="stat">
+            <strong id="percentCount">0%</strong>
+            <span class="muted">Progress</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div class="card">
+    <div id="nextBox" class="card next-session"></div>
 
-<div class="current-session">
+    <div id="phases"></div>
 
-<div class="current-info">
+    <div class="card">
+      <button class="btn danger" onclick="resetProgress()">
+        Reset All Progress
+      </button>
+    </div>
 
-<h2 id="currentTitle">
-S01 — Lab Architecture
-</h2>
-
-<p id="currentDescription">
-Your current learning session
-</p>
-
-</div>
-
-<button onclick="completeCurrent()">
-Complete Current
-</button>
-
-</div>
-
-</div>
-
-
-<!-- PROGRESS -->
-
-<div class="card">
-
-<h2>Overall Progress</h2>
-
-<div class="progress-container">
-
-<div
-id="progressBar"
-class="progress-bar">
-</div>
-
-</div>
-
-<p id="progressText">
-0 / 240 Sessions — 0%
-</p>
-
-</div>
+  </section>
 
 
-<!-- STATS -->
+  <!-- SESSION DETAIL -->
+  <section id="sessionDetail" class="hidden">
 
-<div class="card">
+    <button class="btn secondary back" onclick="showDashboard()">
+      ← برگشت به Dashboard
+    </button>
 
-<div class="stats">
+    <div id="detailContent"></div>
 
-<div class="stat">
-
-<div
-id="completedCount"
-class="stat-number">
-0
-</div>
-
-<div class="stat-label">
-Sessions Completed
-</div>
-
-</div>
-
-
-<div class="stat">
-
-<div
-id="remainingCount"
-class="stat-number">
-240
-</div>
-
-<div class="stat-label">
-Sessions Remaining
-</div>
-
-</div>
-
-
-<div class="stat">
-
-<div
-id="phaseCount"
-class="stat-number">
-0
-</div>
-
-<div class="stat-label">
-Phases Completed
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- ROADMAP -->
-
-<div class="card">
-
-<h2>Roadmap</h2>
-
-<br>
-
-<div id="roadmap"></div>
-
-</div>
-
-
-<!-- ACTIONS -->
-
-<div class="card">
-
-<div class="actions">
-
-<button
-class="reset-button"
-onclick="resetProgress()">
-
-Reset Progress
-
-</button>
-
-</div>
-
-</div>
+  </section>
 
 </div>
 
 
 <script>
 
-/*
-========================================
-ROADMAP DATA
-========================================
-*/
+/* =========================================================
+   ROADMAP
+========================================================= */
 
 const phases = [
 
 {
-name: "Phase 0 — Lab & Admin Habits",
-range: "S01–S03",
-type: "Linux",
-sessions: [
-
-["S01","Lab Architecture"],
-["S02","Server Install"],
-["S03","Admin Habits"]
-
-]
+  id: 0,
+  title: "Phase 0 — Lab و عادت‌های حرفه‌ای",
+  sessions: [
+    ["S01","Lab Architecture"],
+    ["S02","Server Install"],
+    ["S03","Admin Habits"]
+  ]
 },
 
 {
-name: "Phase 1 — Foundations",
-range: "S04–S22",
-type: "Linux",
-sessions: [
-
-["S04","Shell Internals"],
-["S05","Streams"],
-["S06","Text Tools — grep/sed/awk/cut/sort/uniq/tr"],
-["S07","Regex و Log Slicing"],
-["S08","find و xargs"],
-["S09","Environment — vim/tmux/PATH/.bashrc/.profile/dotfiles"],
-
-["S10","FHS و inode"],
-["S11","Special Filesystems — /proc /sys /dev /run"],
-["S12","Archive و Copy — tar/zstd/rsync/dd"],
-
-["S13","Users / Groups"],
-["S14","Permission Model"],
-["S15","ACL و sudo"],
-["S16","Permission Troubleshooting"],
-
-["S17","apt/dpkg و dnf/rpm"],
-["S18","Repos و Verification"],
-
-["S19","Process Model"],
-["S20","Process Internals"],
-["S21","Cumulative + Project"],
-["S22","Phase 1 Assessment"]
-
-]
+  id: 1,
+  title: "Phase 1 — Foundations سیستماتیک",
+  sessions: [
+    ["S04","Shell Internals"],
+    ["S05","Streams"],
+    ["S06","Text Tools — grep/sed/awk/cut/sort/uniq/tr"],
+    ["S07","Regex و Log Slicing"],
+    ["S08","find و xargs"],
+    ["S09","Environment — vim/tmux/PATH/.bashrc/.profile/dotfiles"],
+    ["S10","FHS و inode"],
+    ["S11","Special Filesystems — /proc /sys /dev /run"],
+    ["S12","Archive و Copy — tar/zstd/rsync/dd"],
+    ["S13","Users / Groups"],
+    ["S14","Permission Model"],
+    ["S15","ACL و sudo"],
+    ["S16","Permission Troubleshooting"],
+    ["S17","apt/dpkg و dnf/rpm"],
+    ["S18","Repos و Verification"],
+    ["S19","Process Model"],
+    ["S20","Process Internals"],
+    ["S21","Cumulative + Project"],
+    ["S22","Phase 1 Assessment"]
+  ]
 },
 
 {
-name: "Phase 2 — Core System Administration",
-range: "S23–S46",
-type: "Linux",
-sessions: [
-
-["S23","Boot Chain"],
-["S24","GRUB2 و Recovery"],
-["S25","systemd Units"],
-["S26","Custom Units"],
-["S27","Timers و journald"],
-["S28","Boot / Service Troubleshooting"],
-
-["S29","Block Devices"],
-["S30","Filesystems"],
-["S31","Filesystem Internals"],
-["S32","LVM I"],
-["S33","LVM II"],
-["S34","RAID"],
-["S35","Swap / zram / Quota"],
-["S36","LUKS"],
-["S37","Storage Troubleshooting"],
-["S38","Storage Project"],
-
-["S39","PAM"],
-["S40","SSH Fundamentals"],
-["S41","Central Authentication — LDAP / SSSD / FreeIPA"],
-
-["S42","cron و at"],
-["S43","Logging — rsyslog / journald / logrotate"],
-["S44","Backup"],
-["S45","Phase 2 Project"],
-["S46","Phase 2 Assessment"]
-
-]
+  id: 2,
+  title: "Phase 2 — Core System Administration",
+  sessions: [
+    ["S23","Boot Chain"],
+    ["S24","GRUB2 و Recovery"],
+    ["S25","systemd Units"],
+    ["S26","Custom Units"],
+    ["S27","Timers و journald"],
+    ["S28","Boot / Service Troubleshooting"],
+    ["S29","Block Devices"],
+    ["S30","Filesystems"],
+    ["S31","Filesystem Internals"],
+    ["S32","LVM I"],
+    ["S33","LVM II"],
+    ["S34","RAID"],
+    ["S35","Swap / zram / Quota"],
+    ["S36","LUKS"],
+    ["S37","Storage Troubleshooting"],
+    ["S38","Storage Project"],
+    ["S39","PAM"],
+    ["S40","SSH Fundamentals"],
+    ["S41","Central Authentication — LDAP / SSSD / FreeIPA"],
+    ["S42","cron و at"],
+    ["S43","Logging — rsyslog / journald / logrotate"],
+    ["S44","Backup"],
+    ["S45","Phase 2 Project"],
+    ["S46","Phase 2 Assessment"]
+  ]
 },
 
 {
-name: "Phase 3 — Networking",
-range: "S47–S60",
-type: "Linux",
-sessions: [
-
-["S47","TCP/IP برای Admin"],
-["S48","ip / ss / nmcli / netplan"],
-["S49","Routing"],
-["S50","ARP / VLAN / Bridge"],
-["S51","Bonding / Teaming"],
-["S52","DNS Client"],
-["S53","TCP Deep Dive"],
-["S54","tcpdump / Wireshark"],
-["S55","Netfilter / nftables"],
-["S56","NAT"],
-["S57","Namespaces و veth"],
-["S58","Network Troubleshooting"],
-["S59","Project — Gateway"],
-["S60","Phase 3 Assessment"]
-
-]
+  id: 3,
+  title: "Phase 3 — Networking",
+  sessions: [
+    ["S47","TCP/IP برای Admin"],
+    ["S48","ip / ss / nmcli / netplan"],
+    ["S49","Routing"],
+    ["S50","ARP / VLAN / Bridge"],
+    ["S51","Bonding / Teaming"],
+    ["S52","DNS Client"],
+    ["S53","TCP Deep Dive"],
+    ["S54","tcpdump / Wireshark"],
+    ["S55","Netfilter / nftables"],
+    ["S56","NAT"],
+    ["S57","Namespaces و veth"],
+    ["S58","Network Troubleshooting"],
+    ["S59","Project — Gateway"],
+    ["S60","Phase 3 Assessment"]
+  ]
 },
 
 {
-name: "Phase 4 — Bash، Git و Python",
-range: "S61–S75",
-type: "Linux",
-sessions: [
-
-["S61","Script Basics"],
-["S62","Loops / Functions / Arrays"],
-["S63","Robust Scripting — set -euo pipefail / trap / shellcheck"],
-["S64","Args / Logging / Locks"],
-["S65","awk / sed پیشرفته"],
-["S66","Real Scripts I — Health Check / User Provisioning"],
-["S67","Real Scripts II — Backup / Rotation / Notification"],
-["S68","Testing — bats / Style"],
-["S69","Git Fundamentals"],
-["S70","Branch / Merge / Rebase"],
-["S71","Workflows — PR / Hooks / etckeeper"],
-["S72","Python for Sysadmin I"],
-["S73","Python II — JSON / YAML / API"],
-["S74","Project"],
-["S75","Phase 4 Assessment"]
-
-]
+  id: 4,
+  title: "Phase 4 — Bash، Git و Python",
+  sessions: [
+    ["S61","Script Basics"],
+    ["S62","Loops / Functions / Arrays"],
+    ["S63","Robust Scripting — set -euo pipefail / trap / shellcheck"],
+    ["S64","Args / Logging / Locks"],
+    ["S65","awk / sed پیشرفته"],
+    ["S66","Real Scripts I — Health Check / User Provisioning"],
+    ["S67","Real Scripts II — Backup / Rotation / Notification"],
+    ["S68","Testing — bats / Style"],
+    ["S69","Git Fundamentals"],
+    ["S70","Branch / Merge / Rebase"],
+    ["S71","Workflows — PR / Hooks / etckeeper"],
+    ["S72","Python for Sysadmin I"],
+    ["S73","Python II — JSON / YAML / API"],
+    ["S74","Project"],
+    ["S75","Phase 4 Assessment"]
+  ]
 },
 
 {
-name: "Phase 5 — Network Services",
-range: "S76–S93",
-type: "Linux",
-sessions: [
-
-["S76","SSH Bastion"],
-["S77","DNS I — مفاهیم + Unbound"],
-["S78","DNS II — BIND Authoritative"],
-["S79","DNS III — Split-Horizon + Troubleshooting"],
-["S80","DHCP — Kea / ISC + PXE"],
-["S81","Time — chrony"],
-["S82","Nginx"],
-["S83","Apache"],
-["S84","PKI و TLS"],
-["S85","ACME / Let's Encrypt / HTTPS Hardening"],
-["S86","Reverse Proxy و Load Balancing"],
-["S87","NFS"],
-["S88","Samba"],
-["S89","SFTP Chroot"],
-["S90","Database Administration — PostgreSQL / MariaDB"],
-["S91","Postfix — Optional"],
-["S92","Project"],
-["S93","Phase 5 Assessment"]
-
-]
+  id: 5,
+  title: "Phase 5 — Network Services",
+  sessions: [
+    ["S76","SSH Bastion"],
+    ["S77","DNS I — مفاهیم + Unbound"],
+    ["S78","DNS II — BIND Authoritative"],
+    ["S79","DNS III — Split-Horizon + Troubleshooting"],
+    ["S80","DHCP — Kea / ISC + PXE"],
+    ["S81","Time — chrony"],
+    ["S82","Nginx"],
+    ["S83","Apache"],
+    ["S84","PKI و TLS"],
+    ["S85","ACME / Let's Encrypt / HTTPS Hardening"],
+    ["S86","Reverse Proxy و Load Balancing"],
+    ["S87","NFS"],
+    ["S88","Samba"],
+    ["S89","SFTP Chroot"],
+    ["S90","Database Administration — PostgreSQL / MariaDB"],
+    ["S91","Postfix — Optional"],
+    ["S92","Project"],
+    ["S93","Phase 5 Assessment"]
+  ]
 },
 
 {
-name: "Phase 6 — Security و Hardening",
-range: "S94–S108",
-type: "Linux",
-sessions: [
-
-["S94","Threat Model"],
-["S95","Account / SSH / sudo Hardening"],
-["S96","Firewall Policy"],
-["S97","SELinux I"],
-["S98","SELinux II"],
-["S99","SELinux III + AppArmor"],
-["S100","auditd"],
-["S101","fail2ban / CrowdSec"],
-["S102","Kernel Hardening — sysctl / AIDE"],
-["S103","CIS / OpenSCAP / Lynis"],
-["S104","Patch و Vulnerability Management"],
-["S105","Secrets و GPG"],
-["S106","Incident Response"],
-["S107","Project"],
-["S108","Phase 6 Assessment"]
-
-]
+  id: 6,
+  title: "Phase 6 — Security و Hardening",
+  sessions: [
+    ["S94","Threat Model"],
+    ["S95","Account / SSH / sudo Hardening"],
+    ["S96","Firewall Policy"],
+    ["S97","SELinux I"],
+    ["S98","SELinux II"],
+    ["S99","SELinux III + AppArmor"],
+    ["S100","auditd"],
+    ["S101","fail2ban / CrowdSec"],
+    ["S102","Kernel Hardening — sysctl / AIDE"],
+    ["S103","CIS / OpenSCAP / Lynis"],
+    ["S104","Patch و Vulnerability Management"],
+    ["S105","Secrets و GPG"],
+    ["S106","Incident Response"],
+    ["S107","Project"],
+    ["S108","Phase 6 Assessment"]
+  ]
 },
 
 {
-name: "Phase 7 — Performance، Troubleshooting و Internals",
-range: "S109–S129",
-type: "Linux",
-sessions: [
-
-["S109","USE Method"],
-["S110","CPU و Scheduler — Load Average"],
-["S111","Memory Management — Virtual Memory / Page Cache / OOM"],
-["S112","Memory Leak Lab"],
-["S113","Disk I/O — iostat / Schedulers"],
-["S114","FD و Limits"],
-["S115","Network Tuning — sysctl"],
-["S116","strace / ltrace / perf"],
-["S117","eBPF / bpftrace"],
-["S118","Syscalls و Kernel Modules"],
-["S119","cgroups v2"],
-["S120","Namespaces"],
-["S121","Monitoring پایه — node_exporter / Prometheus / Grafana"],
-["S122","Central Logging پایه — rsyslog remote"],
-["S123","Virtualization — KVM / libvirt"],
-["S124","Kernel Operations — Update / kdump / Live Patch"],
-["S125","Troubleshooting Bootcamp I"],
-["S126","Troubleshooting Bootcamp II"],
-["S127","Troubleshooting Bootcamp III"],
-["S128","Troubleshooting Bootcamp IV"],
-["S129","Phase 7 Assessment"]
-
-]
+  id: 7,
+  title: "Phase 7 — Performance، Troubleshooting و Internals",
+  sessions: [
+    ["S109","USE Method"],
+    ["S110","CPU و Scheduler — Load Average"],
+    ["S111","Memory Management — Virtual Memory / Page Cache / OOM"],
+    ["S112","Memory Leak Lab"],
+    ["S113","Disk I/O — iostat / Schedulers"],
+    ["S114","FD و Limits"],
+    ["S115","Network Tuning — sysctl"],
+    ["S116","strace / ltrace / perf"],
+    ["S117","eBPF / bpftrace"],
+    ["S118","Syscalls و Kernel Modules"],
+    ["S119","cgroups v2"],
+    ["S120","Namespaces"],
+    ["S121","Monitoring پایه — node_exporter / Prometheus / Grafana"],
+    ["S122","Central Logging پایه — rsyslog remote"],
+    ["S123","Virtualization — KVM / libvirt"],
+    ["S124","Kernel Operations — Update / kdump / Live Patch"],
+    ["S125","Troubleshooting Bootcamp I"],
+    ["S126","Troubleshooting Bootcamp II"],
+    ["S127","Troubleshooting Bootcamp III"],
+    ["S128","Troubleshooting Bootcamp IV"],
+    ["S129","Phase 7 Assessment"]
+  ]
 },
 
 {
-name: "Phase 8 — Linux Capstone و Gate",
-range: "S130–S136",
-type: "Linux",
-sessions: [
-
-["S130","Architecture Design"],
-["S131","Capstone Build — Networking"],
-["S132","Capstone Build — Storage"],
-["S133","Capstone Build — Services"],
-["S134","Capstone Build — Security / Monitoring / Backup / Automation"],
-["S135","Chaos Day"],
-["S136","Linux Professional Assessment + Gate Review"]
-
-]
+  id: 8,
+  title: "Phase 8 — Linux Capstone و Gate",
+  sessions: [
+    ["S130","Architecture Design"],
+    ["S131","Capstone Build — Networking"],
+    ["S132","Capstone Build — Storage"],
+    ["S133","Capstone Build — Services"],
+    ["S134","Capstone Build — Security / Monitoring / Backup / Automation"],
+    ["S135","Chaos Day"],
+    ["S136","Linux Professional Assessment + Gate Review"]
+  ]
 },
 
 {
-name: "Phase 9 — Docker",
-range: "S137–S148",
-type: "DevOps / SRE",
-sessions: [
-
-["S137","Container vs VM و Internals"],
-["S138","Docker CLI"],
-["S139","Dockerfile و Multi-stage"],
-["S140","Docker Networking"],
-["S141","Volumes و Storage"],
-["S142","Compose"],
-["S143","Registry و Tagging"],
-["S144","Image Security — Trivy / Rootless"],
-["S145","Podman / Buildah"],
-["S146","Container Troubleshooting"],
-["S147","Project"],
-["S148","Phase 9 Assessment"]
-
-]
+  id: 9,
+  title: "Phase 9 — Containers و Docker",
+  sessions: [
+    ["S137","Container vs VM و Internals"],
+    ["S138","Docker CLI"],
+    ["S139","Dockerfile و Multi-stage"],
+    ["S140","Docker Networking"],
+    ["S141","Volumes و Storage"],
+    ["S142","Compose"],
+    ["S143","Registry و Tagging"],
+    ["S144","Image Security — Trivy / Rootless"],
+    ["S145","Podman / Buildah"],
+    ["S146","Container Troubleshooting"],
+    ["S147","Project"],
+    ["S148","Phase 9 Assessment"]
+  ]
 },
 
 {
-name: "Phase 10 — Ansible",
-range: "S149–S159",
-type: "DevOps / SRE",
-sessions: [
-
-["S149","مفاهیم / Inventory / Idempotency"],
-["S150","Ad-hoc و Playbook"],
-["S151","Variables / Facts / Jinja2"],
-["S152","Handlers / Loops / Conditionals / Tags"],
-["S153","Roles و Collections"],
-["S154","Vault"],
-["S155","Hardening و User Management"],
-["S156","Testing — ansible-lint / Molecule"],
-["S157","AWX / Semaphore — Optional"],
-["S158","Project"],
-["S159","Phase 10 Assessment"]
-
-]
+  id: 10,
+  title: "Phase 10 — Configuration Management با Ansible",
+  sessions: [
+    ["S149","مفاهیم / Inventory / Idempotency"],
+    ["S150","Ad-hoc و Playbook"],
+    ["S151","Variables / Facts / Jinja2"],
+    ["S152","Handlers / Loops / Conditionals / Tags"],
+    ["S153","Roles و Collections"],
+    ["S154","Vault"],
+    ["S155","Hardening و User Management"],
+    ["S156","Testing — ansible-lint / Molecule"],
+    ["S157","AWX / Semaphore — Optional"],
+    ["S158","Project"],
+    ["S159","Phase 10 Assessment"]
+  ]
 },
 
 {
-name: "Phase 11 — CI/CD",
-range: "S160–S169",
-type: "DevOps / SRE",
-sessions: [
-
-["S160","مفاهیم CI/CD"],
-["S161","GitHub Actions / GitLab CI"],
-["S162","Build / Test / Push Image"],
-["S163","Runners — Self-hosted"],
-["S164","Deployment Strategies"],
-["S165","Jenkins — Overview"],
-["S166","Artifact و Versioning"],
-["S167","Pipeline + Ansible Deploy"],
-["S168","Project"],
-["S169","Phase 11 Assessment"]
-
-]
+  id: 11,
+  title: "Phase 11 — CI/CD",
+  sessions: [
+    ["S160","مفاهیم CI/CD"],
+    ["S161","GitHub Actions / GitLab CI"],
+    ["S162","Build / Test / Push Image"],
+    ["S163","Runners — Self-hosted"],
+    ["S164","Deployment Strategies"],
+    ["S165","Jenkins — Overview"],
+    ["S166","Artifact و Versioning"],
+    ["S167","Pipeline + Ansible Deploy"],
+    ["S168","Project"],
+    ["S169","Phase 11 Assessment"]
+  ]
 },
 
 {
-name: "Phase 12 — Cloud و Infrastructure as Code",
-range: "S170–S184",
-type: "DevOps / SRE",
-sessions: [
-
-["S170","Cloud Fundamentals"],
-["S171","Compute و Storage — EC2 / EBS"],
-["S172","VPC"],
-["S173","IAM"],
-["S174","S3 / RDS / ELB / ASG"],
-["S175","Cost و Well-Architected"],
-["S176","Terraform Basics"],
-["S177","State / Variables / Outputs"],
-["S178","Modules"],
-["S179","Remote State / Workspaces"],
-["S180","VPC + EC2 + ALB"],
-["S181","Packer — Optional"],
-["S182","IaC Testing / Policy"],
-["S183","Project"],
-["S184","Phase 12 Assessment"]
-
-]
+  id: 12,
+  title: "Phase 12 — Cloud و Infrastructure as Code",
+  sessions: [
+    ["S170","Cloud Fundamentals"],
+    ["S171","Compute و Storage — EC2 / EBS"],
+    ["S172","VPC"],
+    ["S173","IAM"],
+    ["S174","S3 / RDS / ELB / ASG"],
+    ["S175","Cost و Well-Architected"],
+    ["S176","Terraform Basics"],
+    ["S177","State / Variables / Outputs"],
+    ["S178","Modules"],
+    ["S179","Remote State / Workspaces"],
+    ["S180","VPC + EC2 + ALB"],
+    ["S181","Packer — Optional"],
+    ["S182","IaC Testing / Policy"],
+    ["S183","Project"],
+    ["S184","Phase 12 Assessment"]
+  ]
 },
 
 {
-name: "Phase 13 — Kubernetes",
-range: "S185–S202",
-type: "DevOps / SRE",
-sessions: [
-
-["S185","Kubernetes Architecture"],
-["S186","Local Cluster — kind / minikube"],
-["S187","Pods / ReplicaSets / Deployments"],
-["S188","Services و DNS"],
-["S189","Ingress / Gateway API"],
-["S190","ConfigMaps و Secrets"],
-["S191","PV / PVC / StorageClass"],
-["S192","Scheduling / Resources / Probes"],
-["S193","StatefulSet / DaemonSet / Jobs"],
-["S194","RBAC"],
-["S195","NetworkPolicy و CNI"],
-["S196","Helm"],
-["S197","Kustomize و GitOps — Argo CD"],
-["S198","Cluster با kubeadm"],
-["S199","Upgrade و Backup etcd"],
-["S200","Kubernetes Troubleshooting"],
-["S201","Project"],
-["S202","Phase 13 Assessment — سبک CKA"]
-
-]
+  id: 13,
+  title: "Phase 13 — Kubernetes",
+  sessions: [
+    ["S185","Kubernetes Architecture"],
+    ["S186","Local Cluster — kind / minikube"],
+    ["S187","Pods / ReplicaSets / Deployments"],
+    ["S188","Services و DNS"],
+    ["S189","Ingress / Gateway API"],
+    ["S190","ConfigMaps و Secrets"],
+    ["S191","PV / PVC / StorageClass"],
+    ["S192","Scheduling / Resources / Probes"],
+    ["S193","StatefulSet / DaemonSet / Jobs"],
+    ["S194","RBAC"],
+    ["S195","NetworkPolicy و CNI"],
+    ["S196","Helm"],
+    ["S197","Kustomize و GitOps — Argo CD"],
+    ["S198","Cluster با kubeadm"],
+    ["S199","Upgrade و Backup etcd"],
+    ["S200","Kubernetes Troubleshooting"],
+    ["S201","Project"],
+    ["S202","Phase 13 Assessment — سبک CKA"]
+  ]
 },
 
 {
-name: "Phase 14 — Observability",
-range: "S203–S212",
-type: "DevOps / SRE",
-sessions: [
-
-["S203","سه ستون Observability و Golden Signals"],
-["S204","Prometheus و PromQL"],
-["S205","Alertmanager و Alert Design"],
-["S206","Grafana"],
-["S207","Logging — Loki / ELK"],
-["S208","Tracing — OpenTelemetry / Jaeger"],
-["S209","Kubernetes Observability"],
-["S210","Blackbox / Synthetic Monitoring"],
-["S211","Project"],
-["S212","Phase 14 Assessment"]
-
-]
+  id: 14,
+  title: "Phase 14 — Observability",
+  sessions: [
+    ["S203","سه ستون Observability و Golden Signals"],
+    ["S204","Prometheus و PromQL"],
+    ["S205","Alertmanager و Alert Design"],
+    ["S206","Grafana"],
+    ["S207","Logging — Loki / ELK"],
+    ["S208","Tracing — OpenTelemetry / Jaeger"],
+    ["S209","Kubernetes Observability"],
+    ["S210","Blackbox / Synthetic Monitoring"],
+    ["S211","Project"],
+    ["S212","Phase 14 Assessment"]
+  ]
 },
 
 {
-name: "Phase 15 — DevSecOps",
-range: "S213–S221",
-type: "DevOps / SRE",
-sessions: [
-
-["S213","Shift-left و Threat Modeling"],
-["S214","SAST / Dependency Scanning / SBOM"],
-["S215","Container و IaC Scanning"],
-["S216","Secrets Management — Vault / SOPS"],
-["S217","Supply Chain — cosign / SLSA"],
-["S218","Kubernetes Security — PSA / Kyverno / OPA / Falco"],
-["S219","Compliance as Code"],
-["S220","Project"],
-["S221","Phase 15 Assessment"]
-
-]
+  id: 15,
+  title: "Phase 15 — DevSecOps",
+  sessions: [
+    ["S213","Shift-left و Threat Modeling"],
+    ["S214","SAST / Dependency Scanning / SBOM"],
+    ["S215","Container و IaC Scanning"],
+    ["S216","Secrets Management — Vault / SOPS"],
+    ["S217","Supply Chain — cosign / SLSA"],
+    ["S218","Kubernetes Security — PSA / Kyverno / OPA / Falco"],
+    ["S219","Compliance as Code"],
+    ["S220","Project"],
+    ["S221","Phase 15 Assessment"]
+  ]
 },
 
 {
-name: "Phase 16 — SRE و Advanced Infrastructure",
-range: "S222–S231",
-type: "DevOps / SRE",
-sessions: [
-
-["S222","SLI / SLO / Error Budget"],
-["S223","Incident Management / On-call / Postmortem"],
-["S224","HA — Keepalived / Pacemaker / Corosync / Patroni"],
-["S225","DR / RTO / RPO"],
-["S226","Capacity Planning و Load Testing"],
-["S227","Chaos Engineering"],
-["S228","Multi-region و DNS Failover"],
-["S229","Platform Engineering و Cost"],
-["S230","Project"],
-["S231","Phase 16 Assessment"]
-
-]
+  id: 16,
+  title: "Phase 16 — SRE و Advanced Infrastructure",
+  sessions: [
+    ["S222","SLI / SLO / Error Budget"],
+    ["S223","Incident Management / On-call / Postmortem"],
+    ["S224","HA — Keepalived / Pacemaker / Corosync / Patroni"],
+    ["S225","DR / RTO / RPO"],
+    ["S226","Capacity Planning و Load Testing"],
+    ["S227","Chaos Engineering"],
+    ["S228","Multi-region و DNS Failover"],
+    ["S229","Platform Engineering و Cost"],
+    ["S230","Project"],
+    ["S231","Phase 16 Assessment"]
+  ]
 },
 
 {
-name: "Phase 17 — Final Enterprise Capstone",
-range: "S232–S240",
-type: "DevOps / SRE",
-sessions: [
-
-["S232","Architecture و Design Review"],
-["S233","ساخت مرحله‌ای I"],
-["S234","ساخت مرحله‌ای II"],
-["S235","ساخت مرحله‌ای III"],
-["S236","ساخت مرحله‌ای IV"],
-["S237","ساخت مرحله‌ای V"],
-["S238","Chaos / Incident Day"],
-["S239","Documentation و Demo"],
-["S240","Final Assessment + آمادگی مصاحبه / رزومه"]
-
-]
+  id: 17,
+  title: "Phase 17 — Final Enterprise Capstone",
+  sessions: [
+    ["S232","Architecture و Design Review"],
+    ["S233","ساخت مرحله‌ای I"],
+    ["S234","ساخت مرحله‌ای II"],
+    ["S235","ساخت مرحله‌ای III"],
+    ["S236","ساخت مرحله‌ای IV"],
+    ["S237","ساخت مرحله‌ای V"],
+    ["S238","Chaos / Incident Day"],
+    ["S239","Documentation و Demo"],
+    ["S240","Final Assessment + آمادگی مصاحبه / رزومه"]
+  ]
 }
 
 ];
 
 
-/*
-========================================
-STORAGE
-========================================
-*/
+/* =========================================================
+   STORAGE
+========================================================= */
 
-let completed =
-JSON.parse(
-localStorage.getItem("completedSessions") || "[]"
-);
+let completedSessions =
+  JSON.parse(localStorage.getItem("completedSessions") || "[]");
+
+let sessionData =
+  JSON.parse(localStorage.getItem("sessionData") || "{}");
 
 
-/*
-========================================
-HELPERS
-========================================
-*/
+function saveData() {
+  localStorage.setItem(
+    "completedSessions",
+    JSON.stringify(completedSessions)
+  );
 
-function isCompleted(id) {
-    return completed.includes(id);
+  localStorage.setItem(
+    "sessionData",
+    JSON.stringify(sessionData)
+  );
 }
 
 
-function save() {
+/* =========================================================
+   HELPERS
+========================================================= */
 
-    localStorage.setItem(
-        "completedSessions",
-        JSON.stringify(completed)
-    );
-
+function allSessions() {
+  return phases.flatMap(p => p.sessions);
 }
 
 
-/*
-========================================
-COMPLETE / UNCOMPLETE
-========================================
-*/
+function findSession(id) {
+  for (const phase of phases) {
+    const found = phase.sessions.find(s => s[0] === id);
 
-function toggleSession(id) {
+    if (found) {
+      return {
+        phase,
+        id: found[0],
+        title: found[1]
+      };
+    }
+  }
 
-    if (isCompleted(id)) {
+  return null;
+}
 
-        completed =
-        completed.filter(
-            session => session !== id
-        );
 
-    } else {
+function getNextSession() {
+  return allSessions().find(s => !completedSessions.includes(s[0]));
+}
 
-        completed.push(id);
 
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function renderDashboard() {
+
+  const all = allSessions();
+
+  const completed = completedSessions.length;
+  const remaining = all.length - completed;
+  const percent = Math.round((completed / all.length) * 100);
+
+  document.getElementById("completedCount").textContent = completed;
+  document.getElementById("remainingCount").textContent = remaining;
+  document.getElementById("percentCount").textContent = percent + "%";
+  document.getElementById("overallFill").style.width = percent + "%";
+
+
+  const next = getNextSession();
+  const nextBox = document.getElementById("nextBox");
+
+  if (!next) {
+
+    nextBox.innerHTML = `
+      <h2>🎉 مسیر کامل شد!</h2>
+      <p class="muted">
+        هر 240 Session تکمیل شده‌اند.
+      </p>
+    `;
+
+  } else {
+
+    nextBox.innerHTML = `
+      <h2>🎯 Session بعدی</h2>
+
+      <div class="badge">${next[0]}</div>
+
+      <h3>${next[1]}</h3>
+
+      <p class="muted">
+        برای شروع، وارد Session شو.
+      </p>
+
+      <button
+        class="btn"
+        onclick="openSession('${next[0]}')">
+        شروع Session →
+      </button>
+    `;
+  }
+
+
+  renderPhases();
+}
+
+
+function renderPhases() {
+
+  const container = document.getElementById("phases");
+
+  container.innerHTML = "";
+
+  phases.forEach((phase, index) => {
+
+    const done = phase.sessions.filter(
+      s => completedSessions.includes(s[0])
+    ).length;
+
+    const total = phase.sessions.length;
+
+    const phaseEl = document.createElement("div");
+
+    phaseEl.className = "phase";
+
+    if (index === 0) {
+      phaseEl.classList.add("open");
     }
 
-    save();
+    phaseEl.innerHTML = `
 
-    render();
+      <div
+        class="phase-header"
+        onclick="togglePhase(this.parentElement)">
 
+        <div>
+          <div class="phase-title">
+            ${phase.title}
+          </div>
+
+          <div class="phase-progress">
+            ${done} / ${total} completed
+          </div>
+        </div>
+
+        <div>⌄</div>
+
+      </div>
+
+      <div class="sessions">
+
+        ${phase.sessions.map(session => {
+
+          const id = session[0];
+          const title = session[1];
+
+          const isDone =
+            completedSessions.includes(id);
+
+          return `
+
+            <button
+              class="session ${isDone ? "completed" : ""}"
+              onclick="openSession('${id}')">
+
+              <span class="session-id">
+                ${id}
+              </span>
+
+              —
+              ${title}
+
+              ${
+                isDone
+                ? `<span class="check">✓</span>`
+                : ""
+              }
+
+            </button>
+
+          `;
+
+        }).join("")}
+
+      </div>
+    `;
+
+    container.appendChild(phaseEl);
+  });
 }
 
 
-/*
-========================================
-CURRENT SESSION
-========================================
-*/
+function togglePhase(element) {
+  element.classList.toggle("open");
+}
 
-function getCurrentSession() {
 
-    for (const phase of phases) {
+/* =========================================================
+   SESSION DETAIL
+========================================================= */
 
-        for (const session of phase.sessions) {
+function openSession(id) {
 
-            if (!isCompleted(session[0])) {
+  const session = findSession(id);
 
-                return session;
+  if (!session) return;
 
+  document.getElementById("dashboard")
+    .classList.add("hidden");
+
+  document.getElementById("sessionDetail")
+    .classList.remove("hidden");
+
+  renderSession(session);
+}
+
+
+function renderSession(session) {
+
+  const data = sessionData[session.id] || {};
+
+  const isCompleted =
+    completedSessions.includes(session.id);
+
+  const status =
+    data.status || "🔴";
+
+  const notes =
+    data.notes || "";
+
+  const reviews =
+    data.reviews || {};
+
+  const previous =
+    getPreviousSession(session.id);
+
+  const next =
+    getFollowingSession(session.id);
+
+
+  const parts = getDefaultParts(session);
+
+
+  document.getElementById("detailContent").innerHTML = `
+
+    <div class="card">
+
+      <div class="badge">
+        Phase ${session.phase.id}
+      </div>
+
+      <div class="detail-title">
+        ${session.id} — ${session.title}
+      </div>
+
+      <div class="muted">
+        ${session.phase.title}
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>📚 Parts</h3>
+
+      ${parts.map((part, i) => `
+
+        <div class="part">
+
+          <strong>
+            Part ${i + 1} — ${part.title}
+          </strong>
+
+          <p class="muted">
+            ${part.description}
+          </p>
+
+        </div>
+
+      `).join("")}
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>🧠 وضعیت یادگیری</h3>
+
+      <div class="status-grid">
+
+        ${["🔴","🟠","🟡","🟢","🔵"].map(s => `
+
+          <button
+            class="status-btn ${status === s ? "active" : ""}"
+            onclick="setStatus('${session.id}','${s}')">
+
+            ${s}
+
+          </button>
+
+        `).join("")}
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>🧪 Lab</h3>
+
+      <p>
+        این بخش محل Lab عملی Session است.
+      </p>
+
+      <div class="danger-box">
+
+        ⚠️ قبل از اجرای Commandهای خطرناک:
+        <br><br>
+
+        <strong>Risk → Blast Radius → Verification → Rollback</strong>
+
+        <br><br>
+
+        هیچ Command مخربی را بدون توضیح و بررسی اجرا نکن.
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>🎯 Exercises</h3>
+
+      ${["L1","L2","L3","L4","L5"].map((level, i) => `
+
+        <div class="exercise">
+
+          <strong>${level}</strong>
+
+          <p class="muted">
+            ${
+              [
+                "آشنایی و اجرای ساده",
+                "تمرین پایه",
+                "سناریوی واقعی",
+                "Troubleshooting",
+                "سناریوی Production"
+              ][i]
             }
+          </p>
 
+        </div>
+
+      `).join("")}
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>📝 یادداشت‌های من</h3>
+
+      <textarea
+        id="notes"
+        placeholder="نکته‌ها، خطاها، Commandها و چیزهایی که باید مرور کنم..."
+        oninput="saveNotes('${session.id}')">${escapeHtml(notes)}</textarea>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>🔄 Review Schedule</h3>
+
+      ${renderReviews(session.id, reviews)}
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>✅ Session Status</h3>
+
+      <p>
+        ${
+          isCompleted
+          ? "این Session تکمیل شده است."
+          : "این Session هنوز تکمیل نشده است."
+        }
+      </p>
+
+      <button
+        class="btn ${isCompleted ? "secondary" : "success"}"
+        onclick="toggleComplete('${session.id}')">
+
+        ${
+          isCompleted
+          ? "↩️ علامت‌گذاری به عنوان ناتمام"
+          : "✅ Complete Session"
         }
 
+      </button>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>🧭 Navigation</h3>
+
+      <div class="nav-buttons">
+
+        ${
+          previous
+          ? `
+            <button
+              class="btn secondary"
+              onclick="openSession('${previous.id}')">
+              ← ${previous.id}
+            </button>
+          `
+          : ""
+        }
+
+        ${
+          next
+          ? `
+            <button
+              class="btn"
+              onclick="goNext('${session.id}')"
+              ${!isCompleted ? "disabled" : ""}>
+              بعدی → ${next.id}
+            </button>
+          `
+          : ""
+        }
+
+      </div>
+
+      ${
+        next && !isCompleted
+        ? `
+          <p class="muted">
+            برای رفتن به Session بعدی، ابتدا این Session را Complete کن.
+          </p>
+        `
+        : ""
+      }
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   PARTS
+========================================================= */
+
+function getDefaultParts(session) {
+
+  const title = session.title;
+
+  if (session.id === "S01") {
+
+    return [
+      {
+        title: "Architecture",
+        description:
+          "طراحی محیط Lab، نقش Serverها، Network و مسیر یادگیری."
+      },
+      {
+        title: "Production Thinking",
+        description:
+          "چرا Admin/SRE باید قبل از تغییر، اثر آن را بررسی کند."
+      },
+      {
+        title: "Safety",
+        description:
+          "Risk، Blast Radius، Verification و Rollback."
+      }
+    ];
+
+  }
+
+  return [
+
+    {
+      title: "Concepts",
+      description:
+        `مفاهیم اصلی ${title} به زبان ساده و سپس عمیق.`
+    },
+
+    {
+      title: "Production",
+      description:
+        "مثال واقعی از محیط Production و Datacenter."
+    },
+
+    {
+      title: "Lab",
+      description:
+        "تمرین عملی و مشاهده نتیجه."
+    },
+
+    {
+      title: "Troubleshooting",
+      description:
+        "Observe → Data → Hypothesis → Test → Fix → Verify → Prevent."
     }
 
+  ];
+}
+
+
+/* =========================================================
+   REVIEWS
+========================================================= */
+
+function renderReviews(id, reviews) {
+
+  const reviewTypes = [
+    ["+1d","مرور بعد از 1 روز"],
+    ["+3d","مرور بعد از 3 روز"],
+    ["+7d","مرور بعد از 7 روز"],
+    ["+14d","مرور بعد از 14 روز"],
+    ["+30d","مرور بعد از 30 روز"],
+    ["+60d","مرور بعد از 60 روز"]
+  ];
+
+  return reviewTypes.map(r => {
+
+    const done = reviews[r[0]] === true;
+
+    return `
+
+      <div class="review ${done ? "done" : ""}">
+
+        <span>
+          ${r[0]} — ${r[1]}
+        </span>
+
+        <button
+          onclick="toggleReview('${id}','${r[0]}')">
+
+          ${done ? "✓ انجام شد" : "انجام شد"}
+
+        </button>
+
+      </div>
+
+    `;
+
+  }).join("");
+}
+
+
+function toggleReview(id, review) {
+
+  if (!sessionData[id]) {
+    sessionData[id] = {};
+  }
+
+  if (!sessionData[id].reviews) {
+    sessionData[id].reviews = {};
+  }
+
+  sessionData[id].reviews[review] =
+    !sessionData[id].reviews[review];
+
+  saveData();
+
+  const session = findSession(id);
+
+  if (session) renderSession(session);
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function setStatus(id, status) {
+
+  if (!sessionData[id]) {
+    sessionData[id] = {};
+  }
+
+  sessionData[id].status = status;
+
+  saveData();
+
+  const session = findSession(id);
+
+  if (session) renderSession(session);
+}
+
+
+/* =========================================================
+   NOTES
+========================================================= */
+
+function saveNotes(id) {
+
+  const notes =
+    document.getElementById("notes").value;
+
+  if (!sessionData[id]) {
+    sessionData[id] = {};
+  }
+
+  sessionData[id].notes = notes;
+
+  saveData();
+}
+
+
+/* =========================================================
+   COMPLETE
+========================================================= */
+
+function toggleComplete(id) {
+
+  const index =
+    completedSessions.indexOf(id);
+
+  if (index === -1) {
+
+    completedSessions.push(id);
+
+  } else {
+
+    completedSessions.splice(index, 1);
+
+  }
+
+  saveData();
+
+  const session = findSession(id);
+
+  if (session) {
+    renderSession(session);
+  }
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function getPreviousSession(id) {
+
+  const all = allSessions();
+
+  const index =
+    all.findIndex(s => s[0] === id);
+
+  if (index <= 0) return null;
+
+  return findSession(all[index - 1][0]);
+}
+
+
+function getFollowingSession(id) {
+
+  const all = allSessions();
+
+  const index =
+    all.findIndex(s => s[0] === id);
+
+  if (index === -1 || index >= all.length - 1) {
     return null;
+  }
 
+  return findSession(all[index + 1][0]);
 }
 
 
-function completeCurrent() {
+function goNext(id) {
 
-    const current =
-    getCurrentSession();
+  if (!completedSessions.includes(id)) {
+    alert("ابتدا این Session را Complete کن.");
+    return;
+  }
 
-    if (!current) {
+  const next = getFollowingSession(id);
 
-        alert("All 240 sessions are completed! 🎉");
-
-        return;
-
-    }
-
-    toggleSession(current[0]);
-
+  if (next) {
+    openSession(next.id);
+  }
 }
 
 
-/*
-========================================
-RENDER ROADMAP
-========================================
-*/
+/* =========================================================
+   DASHBOARD / RESET
+========================================================= */
 
-function render() {
+function showDashboard() {
 
-    const roadmap =
-    document.getElementById("roadmap");
+  document.getElementById("sessionDetail")
+    .classList.add("hidden");
 
-    roadmap.innerHTML = "";
+  document.getElementById("dashboard")
+    .classList.remove("hidden");
 
-    let totalCompleted = completed.length;
+  renderDashboard();
 
-    let completedPhases = 0;
-
-
-    phases.forEach((phase, index) => {
-
-        const phaseCompleted =
-        phase.sessions.filter(
-            session => isCompleted(session[0])
-        ).length;
-
-
-        if (
-            phaseCompleted ===
-            phase.sessions.length
-        ) {
-
-            completedPhases++;
-
-        }
-
-
-        const phaseElement =
-        document.createElement("div");
-
-        phaseElement.className = "phase";
-
-
-        const header =
-        document.createElement("div");
-
-        header.className = "phase-header";
-
-        header.innerHTML = `
-
-            <div>
-
-                <div class="phase-title">
-                    ${phase.name}
-                </div>
-
-                <div class="phase-progress">
-                    ${phase.range}
-                </div>
-
-            </div>
-
-            <div class="phase-progress">
-                ${phaseCompleted}/${phase.sessions.length}
-            </div>
-
-        `;
-
-
-        const sessionsContainer =
-        document.createElement("div");
-
-        sessionsContainer.className =
-        "sessions";
-
-
-        phase.sessions.forEach(session => {
-
-            const id = session[0];
-            const title = session[1];
-
-            const checked =
-            isCompleted(id);
-
-            const row =
-            document.createElement("div");
-
-            row.className = "session";
-
-
-            row.innerHTML = `
-
-                <input
-                    class="session-checkbox"
-                    type="checkbox"
-                    ${checked ? "checked" : ""}
-                    onchange="toggleSession('${id}')"
-                >
-
-                <div class="session-number">
-                    ${id}
-                </div>
-
-                <div class="
-                    session-title
-                    ${checked ? "completed" : ""}
-                ">
-                    ${title}
-                </div>
-
-                <div class="
-                    badge
-                    ${phase.type === "Linux"
-                        ? "linux-badge"
-                        : "devops-badge"}
-                ">
-                    ${phase.type}
-                </div>
-
-            `;
-
-
-            sessionsContainer.appendChild(row);
-
-        });
-
-
-        phaseElement.appendChild(header);
-
-        phaseElement.appendChild(
-            sessionsContainer
-        );
-
-        roadmap.appendChild(
-            phaseElement
-        );
-
-    });
-
-
-    /*
-    ========================================
-    GLOBAL PROGRESS
-    ========================================
-    */
-
-    const progress =
-    (totalCompleted / 240) * 100;
-
-
-    document.getElementById(
-        "progressBar"
-    ).style.width =
-    progress + "%";
-
-
-    document.getElementById(
-        "progressText"
-    ).textContent =
-    `${totalCompleted} / 240 Sessions — ${progress.toFixed(1)}%`;
-
-
-    document.getElementById(
-        "completedCount"
-    ).textContent =
-    totalCompleted;
-
-
-    document.getElementById(
-        "remainingCount"
-    ).textContent =
-    240 - totalCompleted;
-
-
-    document.getElementById(
-        "phaseCount"
-    ).textContent =
-    completedPhases;
-
-
-    /*
-    ========================================
-    CURRENT SESSION
-    ========================================
-    */
-
-    const current =
-    getCurrentSession();
-
-
-    if (current) {
-
-        document.getElementById(
-            "currentTitle"
-        ).textContent =
-        `${current[0]} — ${current[1]}`;
-
-        document.getElementById(
-            "currentDescription"
-        ).textContent =
-        "Your next session in the roadmap.";
-
-    } else {
-
-        document.getElementById(
-            "currentTitle"
-        ).textContent =
-        "🎉 Roadmap Completed";
-
-        document.getElementById(
-            "currentDescription"
-        ).textContent =
-        "You completed all 240 sessions.";
-
-    }
-
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 }
 
-
-/*
-========================================
-RESET
-========================================
-*/
 
 function resetProgress() {
 
-    const confirmed =
+  const ok =
     confirm(
-        "Reset ALL session progress?"
+      "مطمئنی می‌خواهی تمام Progress و Sessionها پاک شوند؟"
     );
 
-    if (!confirmed) return;
+  if (!ok) return;
 
-    completed = [];
+  completedSessions = [];
+  sessionData = {};
 
-    save();
+  saveData();
 
-    render();
-
+  showDashboard();
 }
 
 
-/*
-========================================
-START
-========================================
-*/
+/* =========================================================
+   SECURITY
+========================================================= */
 
-render();
+function escapeHtml(text) {
+
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+renderDashboard();
 
 </script>
 
