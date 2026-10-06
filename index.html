@@ -1,183 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linux → DevOps Tracker</title>
 
-    <title>Linux DevOps Tracker</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    body {
+      font-family: Arial, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      padding: 20px;
+    }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #0f1117;
-            color: #ffffff;
-            padding: 24px;
-        }
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
 
-        .container {
-            max-width: 900px;
-            margin: auto;
-        }
+    h1 {
+      margin-bottom: 8px;
+    }
 
-        h1 {
-            margin-bottom: 8px;
-        }
+    .subtitle {
+      color: #8b949e;
+      margin-bottom: 25px;
+    }
 
-        .subtitle {
-            color: #8b93a7;
-            margin-bottom: 30px;
-        }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
 
-        .card {
-            background: #181c25;
-            border: 1px solid #272d3a;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
+    .card h2 {
+      margin-bottom: 15px;
+    }
 
-        .progress-bar {
-            width: 100%;
-            height: 12px;
-            background: #292f3c;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 12px;
-        }
+    .progress-container {
+      background: #21262d;
+      height: 14px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
 
-        .progress {
-            width: 0%;
-            height: 100%;
-            background: #4ade80;
-        }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #238636;
+      transition: width 0.3s;
+    }
 
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-        }
+    .progress-text {
+      color: #8b949e;
+    }
 
-        .stat-number {
-            font-size: 28px;
-            font-weight: bold;
-            margin-top: 8px;
-        }
+    .session {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
 
-        .label {
-            color: #8b93a7;
-            font-size: 14px;
-        }
+    .session-info h3 {
+      margin-bottom: 7px;
+    }
 
-        button {
-            margin-top: 16px;
-            padding: 12px 18px;
-            border: none;
-            border-radius: 10px;
-            background: #4ade80;
-            color: #08110c;
-            font-weight: bold;
-            cursor: pointer;
-        }
+    .session-info p {
+      color: #8b949e;
+    }
 
-        @media (max-width: 600px) {
-            body {
-                padding: 16px;
-            }
+    button {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 11px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
 
-            .stats {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button.completed {
+      background: #30363d;
+      color: #8b949e;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .stat {
+      background: #21262d;
+      border-radius: 10px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      color: #8b949e;
+      font-size: 13px;
+    }
+
+    .status {
+      color: #3fb950;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 12px;
+      }
+
+      .session {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
+  <div class="container">
 
     <h1>Linux → DevOps Tracker</h1>
-
     <p class="subtitle">
-        My personal Linux learning dashboard
+      Personal Linux → DevOps / SRE Learning System
     </p>
 
+    <!-- Overall Progress -->
     <div class="card">
-        <p class="label">Overall Progress</p>
+      <h2>Overall Progress</h2>
 
-        <h2 id="progressText">0%</h2>
+      <div class="progress-container">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
 
-        <div class="progress-bar">
-            <div class="progress" id="progressBar"></div>
-        </div>
+      <p class="progress-text" id="progressText">
+        0 / 240 Sessions
+      </p>
     </div>
 
+    <!-- Current Session -->
     <div class="card">
-        <p class="label">Current Session</p>
 
-        <h2>S01 — Linux Fundamentals</h2>
+      <h2>Current Session</h2>
 
-        <button onclick="completeSession()">
-            Complete Session
-        </button>
-    </div>
+      <div class="session">
 
-    <div class="stats">
+        <div class="session-info">
+          <h3 id="sessionTitle">
+            S01 — Linux Fundamentals
+          </h3>
 
-        <div class="card">
-            <p class="label">Sessions</p>
-            <div class="stat-number" id="sessions">
-                0 / 240
-            </div>
-        </div>
+          <p>
+            Foundation of Linux, kernel, distribution,
+            boot process and system architecture.
+          </p>
 
-        <div class="card">
-            <p class="label">Labs</p>
-            <div class="stat-number">
-                0
-            </div>
-        </div>
-
-        <div class="card">
-            <p class="label">Reviews</p>
-            <div class="stat-number">
-                0
-            </div>
-        </div>
-
-    </div>
-
-</div>
-
-<script>
-
-let completedSessions = 0;
-
-function completeSession() {
-
-    if (completedSessions < 240) {
-        completedSessions++;
-    }
-
-    document.getElementById("sessions").innerText =
-        completedSessions + " / 240";
-
-    let progress =
-        (completedSessions / 240) * 100;
-
-    document.getElementById("progressText").innerText =
-        progress.toFixed(1) + "%";
-
-    document.getElementById("progressBar").style.width =
-        progress + "%";
-}
-
-</script>
-
-</body>
-</html>
+          <div id="status" class="status"></div>
+        </
