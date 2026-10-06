@@ -1,46 +1,100 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Linux → DevOps → SRE Learning OS</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  <link rel="stylesheet" href="style.css">
+  <meta
+    name="theme-color"
+    content="#0f1115"
+  >
+
+  <title>
+    Linux → DevOps → SRE Learning OS
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 </head>
 
 <body>
 
 <div class="app">
 
+  <!-- =========================
+       HEADER
+  ========================== -->
+
   <header class="header">
-    <h1>Linux → DevOps → SRE</h1>
-    <p>Personal Learning OS</p>
+
+    <h1>
+      Linux → DevOps → SRE
+    </h1>
+
+    <p>
+      Personal Learning OS
+    </p>
+
   </header>
 
-  <main class="page" id="app"></main>
+
+  <!-- =========================
+       MAIN APP
+  ========================== -->
+
+  <main
+    class="page"
+    id="app"
+  ></main>
+
+
+  <!-- =========================
+       BOTTOM NAVIGATION
+  ========================== -->
 
   <nav class="bottom-nav">
 
-    <button class="active" onclick="showPage('home')">
+    <button
+      id="nav-home"
+      onclick="showPage('home')"
+    >
       🏠
       <br>
       خانه
     </button>
 
-    <button onclick="showPage('roadmap')">
+
+    <button
+      id="nav-roadmap"
+      onclick="showPage('roadmap')"
+    >
       🗺️
       <br>
       مسیر
     </button>
 
-    <button onclick="showPage('reviews')">
+
+    <button
+      id="nav-reviews"
+      onclick="showPage('reviews')"
+    >
       🔄
       <br>
       مرور
     </button>
 
-    <button onclick="showPage('stats')">
+
+    <button
+      id="nav-stats"
+      onclick="showPage('stats')"
+    >
       📊
       <br>
       آمار
@@ -50,73 +104,387 @@
 
 </div>
 
+
+<!-- =========================
+     DATA
+========================== -->
+
+<script src="data.js"></script>
+
+
+<!-- =========================
+     APP LOGIC
+========================== -->
+
 <script src="app.js"></script>
+
+
+<!-- =========================
+     UI
+========================== -->
 
 <script>
 
-const app = document.getElementById("app");
+const app =
+  document.getElementById("app");
 
-function showPage(page) {
 
-  document.querySelectorAll(".bottom-nav button")
-    .forEach(button => button.classList.remove("active"));
+/* =========================
+   NAVIGATION
+========================= */
 
-  if (page === "home") {
-    renderHome();
-    document.querySelectorAll(".bottom-nav button")[0]
-      .classList.add("active");
+function setActiveNav(page) {
+
+  document
+    .querySelectorAll(".bottom-nav button")
+    .forEach(button => {
+
+      button.classList.remove("active");
+
+    });
+
+
+  const button =
+    document.getElementById(
+      `nav-${page}`
+    );
+
+
+  if (button) {
+    button.classList.add("active");
   }
 
-  if (page === "roadmap") {
-    renderRoadmap();
-    document.querySelectorAll(".bottom-nav button")[1]
-      .classList.add("active");
-  }
-
-  if (page === "reviews") {
-    renderReviews();
-    document.querySelectorAll(".bottom-nav button")[2]
-      .classList.add("active");
-  }
-
-  if (page === "stats") {
-    renderStats();
-    document.querySelectorAll(".bottom-nav button")[3]
-      .classList.add("active");
-  }
 }
 
 
+/* =========================
+   PAGE ROUTER
+========================= */
+
+function showPage(page) {
+
+  setActiveNav(page);
+
+
+  if (page === "home") {
+
+    renderHome();
+
+    return;
+
+  }
+
+
+  if (page === "roadmap") {
+
+    renderRoadmap();
+
+    return;
+
+  }
+
+
+  if (page === "reviews") {
+
+    renderReviews();
+
+    return;
+
+  }
+
+
+  if (page === "stats") {
+
+    renderStats();
+
+    return;
+
+  }
+
+}
+
+
+/* =========================
+   SESSION HELPERS
+========================= */
+
+function getAllSessions() {
+
+  const sessions = [];
+
+
+  ROADMAP.forEach(phase => {
+
+    phase.sessions.forEach(session => {
+
+      sessions.push({
+
+        id: session[0],
+
+        title: session[1],
+
+        phaseId: phase.id,
+
+        phaseName: phase.name,
+
+        track: phase.track
+
+      });
+
+    });
+
+  });
+
+
+  return sessions;
+
+}
+
+
+function findSession(sessionId) {
+
+  return getAllSessions()
+    .find(session => {
+
+      return session.id === sessionId;
+
+    });
+
+}
+
+
+function getCompletedSessionsCount() {
+
+  return getAllSessions()
+    .filter(session => {
+
+      const data =
+        getSessionData(session.id);
+
+      return data.completion >= 100;
+
+    })
+    .length;
+
+}
+
+
+function getTotalStudyMinutes() {
+
+  return APP_STATE.studyLogs
+    .reduce(
+      (total, log) => {
+
+        return total +
+          Number(log.durationMinutes || 0);
+
+      },
+      0
+    );
+
+}
+
+
+function getTodayStudyMinutes() {
+
+  const today =
+    new Date()
+      .toISOString()
+      .slice(0, 10);
+
+
+  return APP_STATE.studyLogs
+    .filter(log => {
+
+      return log.date === today;
+
+    })
+    .reduce(
+      (total, log) => {
+
+        return total +
+          Number(log.durationMinutes || 0);
+
+      },
+      0
+    );
+
+}
+
+
+function getLinuxProgress() {
+
+  const linuxSessions =
+    getAllSessions()
+      .filter(session => {
+
+        return session.track === "Linux";
+
+      });
+
+
+  if (!linuxSessions.length) {
+
+    return 0;
+
+  }
+
+
+  const completed =
+    linuxSessions.filter(session => {
+
+      const data =
+        getSessionData(session.id);
+
+      return data.completion >= 100;
+
+    }).length;
+
+
+  return Math.round(
+    completed /
+    linuxSessions.length *
+    100
+  );
+
+}
+
+
+function getOverallProgress() {
+
+  const sessions =
+    getAllSessions();
+
+
+  if (!sessions.length) {
+
+    return 0;
+
+  }
+
+
+  const completed =
+    getCompletedSessionsCount();
+
+
+  return Math.round(
+    completed /
+    sessions.length *
+    100
+  );
+
+}
+
+
+/* =========================
+   HOME
+========================= */
+
 function renderHome() {
 
-  const currentSession = getCurrentSession();
+  const currentSessionId =
+    getCurrentSession();
+
+
+  const currentSession =
+    findSession(
+      currentSessionId
+    );
+
+
+  const currentData =
+    getSessionData(
+      currentSessionId
+    );
+
+
+  const todayMinutes =
+    getTodayStudyMinutes();
+
+
+  const completed =
+    getCompletedSessionsCount();
+
+
+  const linuxProgress =
+    getLinuxProgress();
+
+
+  const overallProgress =
+    getOverallProgress();
+
+
+  const currentTitle =
+    currentSession
+      ? currentSession.title
+      : "Session";
+
 
   app.innerHTML = `
 
     <section class="card">
 
-      <h2>👋 ادامه یادگیری</h2>
+      <div class="eyebrow">
+        CURRENT SESSION
+      </div>
 
-      <p>
-        Session فعلی
-      </p>
+      <h2>
+        ${currentSessionId}
+      </h2>
 
       <h3>
-        ${currentSession}
+        ${currentTitle}
       </h3>
 
+      <p class="muted">
+        ${currentSession
+          ? currentSession.phaseName
+          : ""}
+      </p>
+
+
+      <div class="status-row">
+
+        <span>
+          ${getStatusIcon(
+            currentData.learningStatus
+          )}
+          ${formatStatus(
+            currentData.learningStatus
+          )}
+        </span>
+
+        <span>
+          ${currentData.completion || 0}%
+        </span>
+
+      </div>
+
+
       <div class="progress">
+
         <div
           class="progress-bar"
-          style="width: 0%">
-        </div>
+          style="
+            width:
+            ${currentData.completion || 0}%
+          "
+        ></div>
+
       </div>
+
 
       <br>
 
+
       <button
         class="btn"
-        onclick="openSession('${currentSession}')">
+        onclick="
+          openSession(
+            '${currentSessionId}'
+          )
+        "
+      >
         ادامه Session
       </button>
 
@@ -125,10 +493,11 @@ function renderHome() {
 
     <section class="grid">
 
+
       <div class="card stat">
 
         <div class="stat-value">
-          0
+          ${todayMinutes}
         </div>
 
         <div class="stat-label">
@@ -141,7 +510,7 @@ function renderHome() {
       <div class="card stat">
 
         <div class="stat-value">
-          0
+          ${completed}
         </div>
 
         <div class="stat-label">
@@ -150,21 +519,45 @@ function renderHome() {
 
       </div>
 
+
     </section>
 
 
     <section class="card">
 
-      <h2>🎯 اقدام بعدی</h2>
+      <div class="eyebrow">
+        NEXT BEST ACTION
+      </div>
+
+      <h2>
+        🎯 ${getNextAction()}
+      </h2>
+
+      <p class="muted">
+        مسیر یادگیری را مرحله‌به‌مرحله ادامه بده.
+      </p>
+
+    </section>
+
+
+    <section class="card">
+
+      <h2>
+        🔄 مرور
+      </h2>
 
       <p>
-        اولین Session را شروع کن.
+        ${getPendingReviewsCount()}
+        مرور در انتظار انجام
       </p>
 
       <button
         class="btn secondary"
-        onclick="openSession('${currentSession}')">
-        شروع ${currentSession}
+        onclick="
+          showPage('reviews')
+        "
+      >
+        مشاهده مرورها
       </button>
 
     </section>
@@ -172,10 +565,25 @@ function renderHome() {
 
     <section class="card">
 
-      <h2>🔄 مرور</h2>
+      <h2>
+        📈 پیشرفت Linux
+      </h2>
+
+      <div class="progress">
+
+        <div
+          class="progress-bar"
+          style="
+            width:
+            ${linuxProgress}%
+          "
+        ></div>
+
+      </div>
 
       <p>
-        مرور عقب‌افتاده‌ای وجود ندارد.
+        ${linuxProgress}%
+        — از 136 Session
       </p>
 
     </section>
@@ -183,131 +591,452 @@ function renderHome() {
 
     <section class="card">
 
-      <h2>📈 پیشرفت</h2>
-
-      <p>
-        Linux
-      </p>
+      <h2>
+        🚀 پیشرفت کل مسیر
+      </h2>
 
       <div class="progress">
+
         <div
           class="progress-bar"
-          style="width: 0%">
-        </div>
+          style="
+            width:
+            ${overallProgress}%
+          "
+        ></div>
+
       </div>
 
       <p>
-        0 / 136 Session
+        ${overallProgress}%
+        — از 240 Session
       </p>
 
     </section>
 
   `;
+
 }
 
+
+/* =========================
+   ROADMAP
+========================= */
 
 function renderRoadmap() {
 
-  app.innerHTML = `
+  let html = `
 
     <section class="card">
 
-      <h2>🗺️ Roadmap</h2>
-
-      <p>
-        مسیر کامل Linux → DevOps → SRE
-      </p>
-
-    </section>
-
-
-    <section class="card">
-
-      <h3>🐧 Linux</h3>
-
-      <p>
-        Phase 0 → Phase 8
-      </p>
-
-      <div class="progress">
-        <div
-          class="progress-bar"
-          style="width: 0%">
-        </div>
+      <div class="eyebrow">
+        LEARNING ROADMAP
       </div>
 
-      <br>
+      <h2>
+        🗺️ مسیر یادگیری
+      </h2>
 
-      <button
-        class="btn"
-        onclick="openSession('S01')">
-        شروع Linux
-      </button>
-
-    </section>
-
-
-    <section class="card">
-
-      <h3>⚙️ DevOps / SRE</h3>
-
-      <p>
-        Phase 9 → Phase 17
-      </p>
-
-      <p>
-        🔒 بعد از عبور از Linux Gate
+      <p class="muted">
+        Linux → DevOps → SRE
       </p>
 
     </section>
 
   `;
+
+
+  ROADMAP.forEach(phase => {
+
+    const sessions =
+      phase.sessions;
+
+
+    let completed = 0;
+
+
+    sessions.forEach(session => {
+
+      const data =
+        getSessionData(
+          session[0]
+        );
+
+
+      if (
+        data.completion >= 100
+      ) {
+
+        completed++;
+
+      }
+
+    });
+
+
+    const total =
+      sessions.length;
+
+
+    const progress =
+      total
+        ? Math.round(
+            completed /
+            total *
+            100
+          )
+        : 0;
+
+
+    const locked =
+      phase.track ===
+      "DevOps / SRE";
+
+
+    html += `
+
+      <section class="card">
+
+        <div class="phase-header">
+
+          <div>
+
+            <div class="eyebrow">
+              ${phase.id}
+            </div>
+
+            <h2>
+              ${locked ? "🔒" : "🐧"}
+              ${phase.name}
+            </h2>
+
+            <p class="muted">
+              ${phase.track}
+            </p>
+
+          </div>
+
+          <div class="phase-count">
+            ${completed}/${total}
+          </div>
+
+        </div>
+
+
+        <div class="progress">
+
+          <div
+            class="progress-bar"
+            style="
+              width:
+              ${progress}%
+            "
+          ></div>
+
+        </div>
+
+
+        <p class="muted">
+          ${progress}% complete
+        </p>
+
+
+        <div class="session-list">
+
+    `;
+
+
+    sessions.forEach(session => {
+
+      const sessionId =
+        session[0];
+
+
+      const title =
+        session[1];
+
+
+      const data =
+        getSessionData(
+          sessionId
+        );
+
+
+      const icon =
+        getStatusIcon(
+          data.learningStatus,
+          data.completion
+        );
+
+
+      const isLocked =
+        locked &&
+        !isDevOpsUnlocked();
+
+
+      html += `
+
+        <button
+          class="
+            btn
+            secondary
+            session-button
+            ${isLocked
+              ? "locked"
+              : ""}
+          "
+
+          ${
+            isLocked
+              ? "disabled"
+              : ""
+          }
+
+          onclick="
+            ${
+              isLocked
+                ? ""
+                : `openSession('${sessionId}')`
+            }
+          "
+        >
+
+          <span>
+
+            ${icon}
+
+            <strong>
+              ${sessionId}
+            </strong>
+
+            —
+            ${title}
+
+          </span>
+
+          <span>
+            ${data.completion || 0}%
+          </span>
+
+        </button>
+
+      `;
+
+    });
+
+
+    html += `
+
+        </div>
+
+      </section>
+
+    `;
+
+  });
+
+
+  app.innerHTML = html;
+
 }
 
+
+/* =========================
+   REVIEWS
+========================= */
 
 function renderReviews() {
 
-  app.innerHTML = `
+  const pending =
+    APP_STATE.reviews
+      .filter(review => {
+
+        return review.status !== "DONE";
+
+      });
+
+
+  const overdue =
+    pending.filter(review => {
+
+      return (
+        review.dueDate &&
+        review.dueDate <
+        getTodayDate()
+      );
+
+    });
+
+
+  let html = `
 
     <section class="card">
 
-      <h2>🔄 Reviews</h2>
+      <div class="eyebrow">
+        SPACED REPETITION
+      </div>
+
+      <h2>
+        🔄 مرورها
+      </h2>
 
       <p>
-        مرورهای امروز
+        ${pending.length}
+        مرور در انتظار انجام
       </p>
 
-      <h3>
-        0
-      </h3>
-
-    </section>
-
-
-    <section class="card">
-
-      <h3>📅 برنامه مرور</h3>
-
       <p>
-        +1d → +3d → +7d → +14d → +30d → +60d
+        ${overdue.length}
+        مرور عقب‌افتاده
       </p>
 
     </section>
 
   `;
+
+
+  if (!pending.length) {
+
+    html += `
+
+      <section class="card">
+
+        <h3>
+          ✅ فعلاً مروری نداری
+        </h3>
+
+        <p class="muted">
+          بعد از تکمیل Sessionها، برنامه مرور
+          +1d، +3d، +7d، +14d، +30d و +60d
+          به‌صورت خودکار ساخته می‌شود.
+        </p>
+
+      </section>
+
+    `;
+
+  }
+
+
+  pending.forEach(review => {
+
+    const session =
+      findSession(
+        review.session
+      );
+
+
+    html += `
+
+      <section class="card">
+
+        <div class="eyebrow">
+          ${review.type || "REVIEW"}
+        </div>
+
+        <h3>
+          ${review.session}
+          —
+          ${
+            session
+              ? session.title
+              : ""
+          }
+        </h3>
+
+        <p>
+          📅
+          ${review.dueDate || "-"}
+        </p>
+
+        <button
+          class="btn"
+          onclick="
+            openSession(
+              '${review.session}'
+            )
+          "
+        >
+          انجام مرور
+        </button>
+
+      </section>
+
+    `;
+
+  });
+
+
+  app.innerHTML = html;
+
 }
 
 
+/* =========================
+   STATS
+========================= */
+
 function renderStats() {
+
+  const totalMinutes =
+    getTotalStudyMinutes();
+
+
+  const totalHours =
+    Math.floor(
+      totalMinutes / 60
+    );
+
+
+  const remainingMinutes =
+    totalMinutes % 60;
+
+
+  const progress =
+    getOverallProgress();
+
+
+  const completed =
+    getCompletedSessionsCount();
+
+
+  const totalSessions =
+    getAllSessions().length;
+
+
+  const labPassed =
+    getAllSessions()
+      .filter(session => {
+
+        const data =
+          getSessionData(
+            session.id
+          );
+
+
+        return (
+          data.labStatus ===
+          "PASSED"
+        );
+
+      })
+      .length;
+
 
   app.innerHTML = `
 
     <section class="card">
 
-      <h2>📊 Statistics</h2>
+      <div class="eyebrow">
+        LEARNING ANALYTICS
+      </div>
 
-      <p>
-        آمار یادگیری شما
+      <h2>
+        📊 آمار یادگیری
+      </h2>
+
+      <p class="muted">
+        وضعیت کلی مسیر یادگیری
       </p>
 
     </section>
@@ -315,14 +1044,15 @@ function renderStats() {
 
     <section class="grid">
 
+
       <div class="card stat">
 
         <div class="stat-value">
-          0h
+          ${totalHours}h
         </div>
 
         <div class="stat-label">
-          زمان مطالعه
+          ساعت مطالعه
         </div>
 
       </div>
@@ -331,57 +1061,200 @@ function renderStats() {
       <div class="card stat">
 
         <div class="stat-value">
-          0%
+          ${remainingMinutes}
         </div>
 
         <div class="stat-label">
-          پیشرفت
+          دقیقه اضافه
         </div>
 
       </div>
+
+
+      <div class="card stat">
+
+        <div class="stat-value">
+          ${completed}
+        </div>
+
+        <div class="stat-label">
+          Session
+        </div>
+
+      </div>
+
+
+      <div class="card stat">
+
+        <div class="stat-value">
+          ${labPassed}
+        </div>
+
+        <div class="stat-label">
+          Lab Passed
+        </div>
+
+      </div>
+
 
     </section>
 
 
     <section class="card">
 
-      <h3>🧠 Learning Health</h3>
+      <h2>
+        📈 Progress
+      </h2>
+
+      <div class="progress">
+
+        <div
+          class="progress-bar"
+          style="
+            width:
+            ${progress}%
+          "
+        ></div>
+
+      </div>
 
       <p>
-        هنوز داده‌ای برای تحلیل وجود ندارد.
+        ${completed}
+        /
+        ${totalSessions}
+        Session
+      </p>
+
+    </section>
+
+
+    <section class="card">
+
+      <h2>
+        🧠 Learning Health
+      </h2>
+
+      <p>
+        وضعیت سلامت یادگیری با داده‌های
+        واقعی Session، Review، Lab و Assessment
+        در مراحل بعدی کامل می‌شود.
       </p>
 
     </section>
 
   `;
+
 }
 
 
+/* =========================
+   SESSION
+========================= */
+
 function openSession(sessionId) {
+
+  const session =
+    findSession(
+      sessionId
+    );
+
+
+  if (!session) {
+
+    return;
+
+  }
+
+
+  setCurrentSession(
+    sessionId
+  );
+
+
+  const data =
+    getSessionData(
+      sessionId
+    );
+
 
   app.innerHTML = `
 
     <section class="card">
 
-      <p>
-        ← بازگشت
-      </p>
+      <button
+        class="btn secondary"
+        onclick="
+          showPage('roadmap')
+        "
+      >
+        ← بازگشت به مسیر
+      </button>
+
+      <br>
+      <br>
+
+      <div class="eyebrow">
+        ${session.phaseId}
+      </div>
 
       <h2>
-        ${sessionId}
+        ${session.id}
+      </h2>
+
+      <h3>
+        ${session.title}
+      </h3>
+
+      <p class="muted">
+        ${session.phaseName}
+      </p>
+
+
+      <div class="status-row">
+
+        <span>
+          ${getStatusIcon(
+            data.learningStatus
+          )}
+
+          ${formatStatus(
+            data.learningStatus
+          )}
+
+        </span>
+
+        <span>
+          ${data.completion || 0}%
+        </span>
+
+      </div>
+
+
+      <div class="progress">
+
+        <div
+          class="progress-bar"
+          style="
+            width:
+            ${data.completion || 0}%
+          "
+        ></div>
+
+      </div>
+
+    </section>
+
+
+    <section class="card">
+
+      <h2>
+        🎯 Mission
       </h2>
 
       <p>
-        Session Page
-      </p>
-
-      <hr>
-
-      <h3>🎯 Mission</h3>
-
-      <p>
-        محتوای آموزشی این Session
-        از طریق ChatGPT ارائه می‌شود.
+        آموزش این Session از طریق ChatGPT
+        انجام می‌شود و نتیجه آن در این اپ
+        ثبت خواهد شد.
       </p>
 
     </section>
@@ -389,10 +1262,58 @@ function openSession(sessionId) {
 
     <section class="card">
 
-      <h3>📚 Parts</h3>
+      <h2>
+        📚 Parts
+      </h2>
+
+      <div class="placeholder">
+
+        Parts آموزشی این Session
+        در مرحله ساخت سیستم آموزشی
+        اضافه می‌شوند.
+
+      </div>
+
+    </section>
+
+
+    <section class="card">
+
+      <h2>
+        ⏱ Study
+      </h2>
 
       <p>
-        Parts در مرحله بعد اضافه می‌شوند.
+        زمان ثبت‌شده:
+        ${data.studyMinutes || 0}
+        دقیقه
+      </p>
+
+      <button
+        class="btn"
+        onclick="
+          startStudy(
+            '${sessionId}'
+          )
+        "
+      >
+        ▶️ شروع مطالعه
+      </button>
+
+    </section>
+
+
+    <section class="card">
+
+      <h2>
+        🧪 Lab
+      </h2>
+
+      <p>
+        وضعیت:
+        ${formatLabStatus(
+          data.labStatus
+        )}
       </p>
 
     </section>
@@ -400,10 +1321,51 @@ function openSession(sessionId) {
 
     <section class="card">
 
-      <h3>🧪 Lab</h3>
+      <h2>
+        📝 Exercises
+      </h2>
+
+      <div class="exercise-grid">
+
+        ${renderExercise(
+          "L1",
+          data.exercises.L1
+        )}
+
+        ${renderExercise(
+          "L2",
+          data.exercises.L2
+        )}
+
+        ${renderExercise(
+          "L3",
+          data.exercises.L3
+        )}
+
+        ${renderExercise(
+          "L4",
+          data.exercises.L4
+        )}
+
+        ${renderExercise(
+          "L5",
+          data.exercises.L5
+        )}
+
+      </div>
+
+    </section>
+
+
+    <section class="card">
+
+      <h2>
+        🔄 Reviews
+      </h2>
 
       <p>
-        Lab هنوز شروع نشده است.
+        مرورها بعد از تکمیل Session
+        ایجاد خواهند شد.
       </p>
 
     </section>
@@ -411,25 +1373,503 @@ function openSession(sessionId) {
 
     <section class="card">
 
-      <h3>📝 Exercises</h3>
+      <h2>
+        📝 Notes
+      </h2>
 
       <p>
-        L1 🔒
-        L2 🔒
-        L3 🔒
-        L4 🔒
-        L5 🔒
+        ${data.notes.length
+          ? data.notes.length +
+            " یادداشت"
+          : "هنوز یادداشتی ثبت نشده"}
       </p>
+
+    </section>
+
+
+    <section class="card">
+
+      <h2>
+        📥 Session Result
+      </h2>
+
+      <p>
+        بعداً می‌توانی نتیجه‌ای که ChatGPT
+        در پایان Session تولید می‌کند
+        اینجا Import کنی.
+      </p>
+
+    </section>
+
+
+    <section class="card">
+
+      <button
+        class="btn"
+        onclick="
+          completeDemoSession(
+            '${sessionId}'
+          )
+        "
+      >
+        ✅ Complete Session
+      </button>
+
+    </section>
+
+
+    <section class="session-navigation">
+
+      ${
+        getPreviousSession(
+          sessionId
+        )
+          ? `
+            <button
+              class="btn secondary"
+              onclick="
+                openSession(
+                  '${getPreviousSession(
+                    sessionId
+                  ).id}'
+                )
+              "
+            >
+              → قبلی
+            </button>
+          `
+          : ""
+      }
+
+
+      ${
+        getNextSession(
+          sessionId
+        )
+          ? `
+            <button
+              class="btn secondary"
+              onclick="
+                openSession(
+                  '${getNextSession(
+                    sessionId
+                  ).id}'
+                )
+              "
+            >
+              بعدی ←
+            </button>
+          `
+          : ""
+      }
 
     </section>
 
   `;
+
 }
 
 
-renderHome();
+/* =========================
+   SESSION NAVIGATION
+========================= */
+
+function getPreviousSession(
+  sessionId
+) {
+
+  const sessions =
+    getAllSessions();
+
+
+  const index =
+    sessions.findIndex(
+      session =>
+        session.id === sessionId
+    );
+
+
+  if (
+    index <= 0
+  ) {
+
+    return null;
+
+  }
+
+
+  return sessions[
+    index - 1
+  ];
+
+}
+
+
+function getNextSession(
+  sessionId
+) {
+
+  const sessions =
+    getAllSessions();
+
+
+  const index =
+    sessions.findIndex(
+      session =>
+        session.id === sessionId
+    );
+
+
+  if (
+    index < 0 ||
+    index >= sessions.length - 1
+  ) {
+
+    return null;
+
+  }
+
+
+  return sessions[
+    index + 1
+  ];
+
+}
+
+
+/* =========================
+   EXERCISES
+========================= */
+
+function renderExercise(
+  level,
+  status
+) {
+
+  return `
+
+    <div class="exercise">
+
+      <strong>
+        ${level}
+      </strong>
+
+      <span>
+        ${formatExerciseStatus(
+          status
+        )}
+      </span>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+function getStatusIcon(
+  status,
+  completion = 0
+) {
+
+  if (
+    completion >= 100
+  ) {
+
+    return "✅";
+
+  }
+
+
+  switch(status) {
+
+    case "INTRODUCED":
+      return "🟠";
+
+    case "PRACTICING":
+      return "🟡";
+
+    case "COMPETENT":
+      return "🟢";
+
+    case "MASTERED":
+      return "🔵";
+
+    default:
+      return "🔴";
+
+  }
+
+}
+
+
+function formatStatus(
+  status
+) {
+
+  switch(status) {
+
+    case "INTRODUCED":
+      return "Introduced";
+
+    case "PRACTICING":
+      return "Practicing";
+
+    case "COMPETENT":
+      return "Competent";
+
+    case "MASTERED":
+      return "Mastered";
+
+    default:
+      return "Not Started";
+
+  }
+
+}
+
+
+function formatExerciseStatus(
+  status
+) {
+
+  switch(status) {
+
+    case "PASSED":
+      return "✅ Passed";
+
+    case "FAILED":
+      return "❌ Failed";
+
+    case "IN_PROGRESS":
+      return "🟡 In Progress";
+
+    case "LOCKED":
+      return "🔒 Locked";
+
+    default:
+      return "⚪ Not Started";
+
+  }
+
+}
+
+
+function formatLabStatus(
+  status
+) {
+
+  switch(status) {
+
+    case "PASSED":
+      return "✅ Passed";
+
+    case "FAILED":
+      return "❌ Failed";
+
+    case "IN_PROGRESS":
+      return "🟡 In Progress";
+
+    case "SKIPPED":
+      return "⏭ Skipped";
+
+    default:
+      return "⚪ Not Started";
+
+  }
+
+}
+
+
+/* =========================
+   DATE
+========================= */
+
+function getTodayDate() {
+
+  return new Date()
+    .toISOString()
+    .slice(0, 10);
+
+}
+
+
+/* =========================
+   REVIEWS
+========================= */
+
+function getPendingReviewsCount() {
+
+  return APP_STATE.reviews
+    .filter(review => {
+
+      return review.status !== "DONE";
+
+    })
+    .length;
+
+}
+
+
+/* =========================
+   NEXT ACTION
+========================= */
+
+function getNextAction() {
+
+  const overdue =
+    APP_STATE.reviews
+      .filter(review => {
+
+        return (
+          review.status !== "DONE" &&
+          review.dueDate &&
+          review.dueDate <
+          getTodayDate()
+        );
+
+      });
+
+
+  if (
+    overdue.length
+  ) {
+
+    return "مرور عقب‌افتاده را انجام بده";
+
+  }
+
+
+  const currentSession =
+    getCurrentSession();
+
+
+  const currentData =
+    getSessionData(
+      currentSession
+    );
+
+
+  if (
+    currentData.completion <
+    100
+  ) {
+
+    return `
+      ادامه ${currentSession}
+    `;
+
+  }
+
+
+  const next =
+    getNextSession(
+      currentSession
+    );
+
+
+  if (next) {
+
+    return `
+      شروع ${next.id}
+    `;
+
+  }
+
+
+  return "مسیر را بررسی کن";
+
+}
+
+
+/* =========================
+   DEVOPS GATE
+========================= */
+
+function isDevOpsUnlocked() {
+
+  return (
+    APP_STATE.gates &&
+    APP_STATE.gates.linux &&
+    APP_STATE.gates.linux.status ===
+    "PASSED"
+  );
+
+}
+
+
+/* =========================
+   DEMO COMPLETION
+========================= */
+
+function completeDemoSession(
+  sessionId
+) {
+
+  updateState(state => {
+
+    const data =
+      getSessionData(
+        sessionId
+      );
+
+
+    data.completion = 100;
+
+    data.learningStatus =
+      "PRACTICING";
+
+
+    state.sessionData[
+      sessionId
+    ] = data;
+
+
+    state.settings.currentSession =
+      sessionId;
+
+  });
+
+
+  alert(
+    `${sessionId} completed`
+  );
+
+
+  openSession(
+    sessionId
+  );
+
+}
+
+
+/* =========================
+   STUDY TIMER PLACEHOLDER
+========================= */
+
+function startStudy(
+  sessionId
+) {
+
+  alert(
+    "Study Timer در مرحله بعدی ساخته می‌شود."
+  );
+
+}
+
+
+/* =========================
+   INITIAL LOAD
+========================= */
+
+showPage("home");
 
 </script>
 
 </body>
+
 </html>
