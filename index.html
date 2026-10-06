@@ -171,50 +171,175 @@ function setActiveNav(page) {
 
 
 /* =========================================================
-   PAGE ROUTER
+   NAVIGATION / BROWSER HISTORY
+
+   The app is a SPA. Every meaningful screen gets its own
+   browser-history entry, so the phone Back button moves to
+   the previous app screen instead of leaving the app.
 ========================================================= */
 
-function showPage(page) {
+const INITIAL_HISTORY_STATE = {
+  ldo: true,
+  page: "home",
+  sessionId: null
+};
 
-  setActiveNav(page);
+function getCurrentRoute() {
 
+  const state = window.history.state;
 
-  if (page === "home") {
+  if (
+    state &&
+    state.ldo === true
+  ) {
 
-    renderHome();
-
-    return;
-
-  }
-
-
-  if (page === "roadmap") {
-
-    renderRoadmap();
-
-    return;
+    return state;
 
   }
 
+  return INITIAL_HISTORY_STATE;
 
-  if (page === "reviews") {
+}
 
-    renderReviews();
+function setRoute(
+  page,
+  sessionId = null,
+  replace = false
+) {
 
-    return;
+  const state = {
+    ldo: true,
+    page,
+    sessionId
+  };
 
-  }
+  const url = window.location.pathname +
+    window.location.search +
+    window.location.hash;
 
+  if (replace) {
 
-  if (page === "stats") {
+    window.history.replaceState(
+      state,
+      "",
+      url
+    );
 
-    renderStats();
+  } else {
 
-    return;
+    window.history.pushState(
+      state,
+      "",
+      url
+    );
 
   }
 
 }
+
+function renderRoute(
+  route
+) {
+
+  const page =
+    route.page || "home";
+
+  if (
+    page === "session" &&
+    route.sessionId
+  ) {
+
+    const session =
+      findSession(route.sessionId);
+
+    if (session) {
+
+      setActiveNav("roadmap");
+      renderSession(route.sessionId);
+      return;
+
+    }
+
+    setRoute("home", null, true);
+    renderHome();
+    setActiveNav("home");
+    return;
+
+  }
+
+  setActiveNav(page);
+
+  if (page === "home") {
+    renderHome();
+    return;
+  }
+
+  if (page === "roadmap") {
+    renderRoadmap();
+    return;
+  }
+
+  if (page === "reviews") {
+    renderReviews();
+    return;
+  }
+
+  if (page === "stats") {
+    renderStats();
+    return;
+  }
+
+  setRoute("home", null, true);
+  setActiveNav("home");
+  renderHome();
+
+}
+
+function showPage(
+  page,
+  options = {}
+) {
+
+  const pushHistory =
+    options.history !== false;
+
+  if (pushHistory) {
+
+    const current =
+      getCurrentRoute();
+
+    if (
+      current.page !== page ||
+      current.sessionId !== null
+    ) {
+
+      setRoute(page, null);
+
+    }
+
+  }
+
+  renderRoute({
+    page,
+    sessionId: null
+  });
+
+}
+
+window.addEventListener(
+  "popstate",
+  function(event) {
+
+    const route =
+      event.state &&
+      event.state.ldo
+        ? event.state
+        : INITIAL_HISTORY_STATE;
+
+    renderRoute(route);
+
+  }
+);
 
 
 /* =========================================================
@@ -797,9 +922,16 @@ function openSession(
   );
 
 
-  renderSession(
+  setRoute(
+    "session",
     sessionId
   );
+
+
+  renderRoute({
+    page: "session",
+    sessionId
+  });
 
 }
 
@@ -2948,6 +3080,24 @@ function formatLabStatus(
 evaluateGates();
 
 
+/* Start inside the app's own history entry.
+   This is what lets the phone Back button return to
+   the previous app screen instead of immediately leaving. */
+
+const initialRoute =
+  getCurrentRoute();
+
+if (!initialRoute.ldo) {
+
+  setRoute(
+    "home",
+    null,
+    true
+  );
+
+}
+
+
 console.log(
   "LDO UI loaded"
 );
@@ -2965,8 +3115,8 @@ console.log(
 );
 
 
-showPage(
-  "home"
+renderRoute(
+  getCurrentRoute()
 );
 
 </script>
